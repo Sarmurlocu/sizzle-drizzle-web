@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style>
+    body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .discount-banner { background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .menu-section { margin-top: 30px; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .item-card { border: 1px solid #ddd; padding: 15px; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+    .price-tag { font-weight: bold; color: #d9534f; }
+    button { cursor: pointer; background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 5px; }
+    button:hover { background: #0056b3; }
+</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sizzle & Drizzle | Doctor-Designed Taiwanese Lunch</title>
-    <meta name="description" content="Healthy Lunch Delivery in Cambridge by Harvard Med Student Chef.">
-</head>
+    </head>
 <body>
     <nav>
-<section id="auth-section">
-    <div class="discount-banner">
-        <p>🎓 Harvard Affiliate? Enter your @harvard.edu email for an automatic 10% off!</p>
-        <input type="email" id="user-email" placeholder="yourname@harvard.edu">
-        <button id="verify-email">Apply Discount</button>
-    </div>
-</section>
+        <section id="auth-section">
+            <div class="discount-banner">
+                <p>🎓 Harvard Affiliate? Enter @harvard.edu email for 10% off!</p>
+                <input type="email" id="user-email" placeholder="yourname@harvard.edu">
+                <button id="verify-email">Apply Discount</button>
+            </div>
+        </section>
         <h1>Sizzle & Drizzle</h1>
         <ul>
             <li><a href="index.html">Menu</a></li>
@@ -23,27 +32,15 @@
         </ul>
     </nav>
 
-    <section id="fresh-produce">
-        <h2>01. Fresh Produce (Farm to Table)</h2>
-        <div id="produce-container">
-            </div>
-    </section>
-
-    <section id="chinese-dishes">
-        <h2>02. Chef's Special Dishes</h2>
-        <div id="dishes-container">
-            </div>
-    </section>
-
-    <section id="group-order-summary" style="display:none;">
-        <h3>Group Order Summary</h3>
-        <pre id="summary-text"></pre>
-        <button onclick="copySummary()">Copy for WhatsApp</button>
-    </section>
     <div id="menu-container"></div>
 
+    <section id="group-order-summary" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+        <h3>🛒 Group Order Summary</h3>
+        <pre id="summary-text" style="background: #f4f4f4; padding: 10px;"></pre>
+        <button onclick="copySummary()">Copy for WhatsApp</button>
+    </section>
+
     <script type="module" src="js/menu.js"></script> 
-    
     <script type="module" src="js/cart.js"></script> 
 </body>
 </html>
