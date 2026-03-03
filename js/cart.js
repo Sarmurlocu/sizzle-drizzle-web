@@ -6,14 +6,12 @@ import {
 
 let cart = [];
 
-// --- 1. 獲取可用時段 (EST 校準) ---
+// 嚴謹邏輯：時區與時段獲取
 async function getNextAvailableSlot() {
     try {
         const estTime = new Intl.DateTimeFormat('en-US', {
-            timeZone: 'America/New_York',
-            hour: 'numeric', minute: 'numeric', hour12: false
+            timeZone: 'America/New_York', hour: 'numeric', minute: 'numeric', hour12: false
         }).formatToParts(new Date());
-
         const hours = parseInt(estTime.find(p => p.type === 'hour').value);
         const minutes = parseInt(estTime.find(p => p.type === 'minute').value);
         const currentTimeId = hours * 100 + minutes;
@@ -23,28 +21,19 @@ async function getNextAvailableSlot() {
         const querySnapshot = await getDocs(q);
 
         for (const docSnap of querySnapshot.docs) {
-            const slotId = parseInt(docSnap.id);
-            const data = docSnap.data();
-            if (slotId >= currentTimeId && data.current_booked < data.max_capacity) {
-                return { id: docSnap.id, ...data };
+            if (parseInt(docSnap.id) >= currentTimeId && docSnap.data().current_booked < docSnap.data().max_capacity) {
+                return { id: docSnap.id, ...docSnap.data() };
             }
         }
         return null;
-    } catch (e) {
-        console.error("Slot Error:", e);
-        return null;
-    }
+    } catch (e) { return null; }
 }
 
-// --- 2. 核心：renderSummary 函數 ---
-// 嚴謹邏輯：不隱藏 Sidebar，只切換內容
+// 核心修改：加入周全的防禦，防止 toFixed 崩潰
 async function renderSummary() {
     const emptyMsg = document.getElementById('empty-cart-msg');
     const formContent = document.getElementById('order-form-content');
     const summaryText = document.getElementById('summary-text');
-    const custIdInput = document.getElementById('cust-id');
-
-    // 魯棒性檢查：確保元素存在
     if (!summaryText) return;
 
     if (cart.length === 0) {
@@ -53,20 +42,20 @@ async function renderSummary() {
         return;
     }
 
-    // 有內容時
     if (emptyMsg) emptyMsg.style.display = 'none';
     if (formContent) formContent.style.display = 'block';
 
     const slot = await getNextAvailableSlot();
     let subtotal = 0;
-    // 防禦性處理：防止 input 沒抓到導致報錯
-    const customerName = custIdInput ? custIdInput.value || 'Guest' : 'Guest';
+    const customerName = document.getElementById('cust-id')?.value || 'Guest';
     
     let itemsLines = `🛒 Order Detail for ${customerName}\n`;
     itemsLines += `============================\n`;
 
     cart.forEach(item => {
-        const lineTotal = item.unitPrice * item.quantity;
+        // 周全的防禦：確保 unitPrice 是數字，否則給予 0
+        const price = parseFloat(item.unitPrice) || 0;
+        const lineTotal = price * (parseInt(item.quantity) || 0);
         subtotal += lineTotal;
         itemsLines += `• ${item.name} x${item.quantity}: $${lineTotal.toFixed(2)}\n`;
     });
@@ -76,84 +65,64 @@ async function renderSummary() {
     itemsLines += `Standard Total: $${subtotal.toFixed(2)}\n`;
     itemsLines += `🎓 Harvard Price: $${(subtotal * 0.9).toFixed(2)}\n`;
     itemsLines += `============================\n`;
-    itemsLines += `Medical-Grade Nutrients Verified 🔬`;
+    itemsLines += `Medical Integrity. Chef's Precision. 🔬`;
 
     summaryText.innerText = itemsLines;
 }
 
-// --- 3. 全局掛載：讓 HTML 按鈕能點擊 (重要！) ---
-// 因為 type="module"，必須手動掛載到 window
 window.handleAddToCart = (itemId, itemName, price) => {
     const qtyInput = document.getElementById(`qty-${itemId}`);
     if (!qtyInput) return;
     
-    const quantity = parseInt(qtyInput.value);
-    if (isNaN(quantity) || quantity <= 0) return;
+    const quantity = parseInt(qtyInput.value) || 0;
+    if (quantity <= 0) return;
+
+    // 確保傳入的 price 永遠是數字 (防禦性處理)
+    const validPrice = parseFloat(price) || 0;
 
     const existing = cart.find(i => i.id === itemId);
     if (existing) {
         existing.quantity += quantity;
     } else {
-        cart.push({ id: itemId, name: itemName, unitPrice: price, quantity });
+        cart.push({ id: itemId, name: itemName, unitPrice: validPrice, quantity });
     }
-
     renderSummary();
 };
 
 window.submitOrder = async () => {
     const custId = document.getElementById('cust-id')?.value.trim();
     const custPhone = document.getElementById('cust-phone')?.value.trim();
-
-    if (!custId || !custPhone) {
-        alert("Please enter Name and Phone.");
-        return;
-    }
+    if (!custId || !custPhone) return alert("Please enter Name and Phone.");
 
     const slot = await getNextAvailableSlot();
-    if (!slot) return alert("All slots are currently full.");
+    if (!slot) return alert("All slots full.");
 
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
-    btn.innerText = "Processing...";
 
     try {
         await runTransaction(db, async (transaction) => {
             const slotRef = doc(db, "pickup_slots", slot.id);
             const slotSnap = await transaction.get(slotRef);
-            
-            if (slotSnap.data().current_booked >= slotSnap.data().max_capacity) {
-                throw "Slot is full!";
-            }
+            if (slotSnap.data().current_booked >= slotSnap.data().max_capacity) throw "Full!";
 
-            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-
-            const orderData = {
+            const subtotal = cart.reduce((sum, item) => sum + ((parseFloat(item.unitPrice) || 0) * item.quantity), 0);
+            await addDoc(collection(db, "orders"), {
                 customer: { name: custId, phone: custPhone },
                 items: cart,
                 billing: { standard_total: subtotal, harvard_total: subtotal * 0.9 },
                 pickup_info: { slot_id: slot.id, time_label: slot.time_label },
-                status: "pending",
                 created_at: serverTimestamp()
-            };
-
+            });
             transaction.update(slotRef, { current_booked: slotSnap.data().current_booked + 1 });
-            await addDoc(collection(db, "orders"), orderData);
         });
-
-        alert("Order Successful! Sizzle & Drizzle starts cooking now.");
-        cart = [];
-        window.location.reload();
+        alert("Success!");
+        location.reload();
     } catch (e) {
-        alert("Order Error: " + e);
+        alert("Error: " + e);
         btn.disabled = false;
-        btn.innerText = "CONFIRM & PREPARE";
     }
 };
 
-// 讓摘要隨姓名輸入即時變動
-document.addEventListener('input', (e) => {
-    if (e.target.id === 'cust-id') renderSummary();
-});
-
-// 初始化
+document.addEventListener('input', (e) => { if (e.target.id === 'cust-id') renderSummary(); });
 renderSummary();
