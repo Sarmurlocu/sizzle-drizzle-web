@@ -1,10 +1,9 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 抽象化：將 Firebase 的 Map 結構轉化為標籤
+// 抽象化：處理 Firebase 的 Map 格式標籤
 function formatNutrientsFromMap(tagsMap) {
     if (!tagsMap) return "";
-    // 遍歷 Map，只顯示值為 true 的項目
     return Object.entries(tagsMap)
         .filter(([_, value]) => value === true)
         .map(([key, _]) => `<span class="nutrient-tag">${key}</span>`)
@@ -37,23 +36,17 @@ async function fetchMenu() {
 
                 itemsSnapshot.forEach(itemDoc => {
                     const item = itemDoc.data();
-                    
-                    // --- 關鍵邏輯對齊 ---
-                    // 根據你的截圖：欄位名是 base_price 而不是 price
                     const basePrice = item.base_price || 0;
-                    const discountRate = item.discount_rate || 1;
                     const isDiscounted = item.is_discounted === true;
-                    
-                    // 計算折扣價 (邏輯優化)
-                    const finalPrice = isDiscounted ? (basePrice * discountRate) : basePrice;
+                    const finalPrice = isDiscounted ? (basePrice * (item.discount_rate || 1)) : basePrice;
 
-                    // 處理 Map 格式的營養標籤
-                    const nutrientHTML = formatNutrientsFromMap(item.nutrition_tags);
+                    // 周全的防禦：處理 ID 中的撇號或空格，防止 HTML 語法報錯
+                    const safeId = itemDoc.id.replace(/[^a-z0-9]/gi, '_');
 
                     grid.innerHTML += `
                         <div class="item-card">
-                            <h3>${item.name || 'Unnamed'}</h3>
-                            <div class="nutrient-container">${nutrientHTML}</div>
+                            <h3>${item.name || 'Unnamed Item'}</h3>
+                            <div class="nutrient-container">${formatNutrientsFromMap(item.nutrition_tags)}</div>
                             <div class="price-row" style="margin: 10px 0; font-weight: 800;">
                                 ${isDiscounted ? 
                                     `<span style="color:#e63946;">$${safePrice(finalPrice)}</span> 
@@ -63,8 +56,10 @@ async function fetchMenu() {
                             </div>
                             <p style="font-size: 0.7rem; color: #888;">Stock: ${item.stock || 0}</p>
                             <div style="display: flex; gap: 8px; margin-top: auto;">
-                                <input type="number" id="qty-${itemDoc.id}" value="1" min="1" style="width: 50px; text-align: center;">
-                                <button class="add-btn" onclick="window.handleAddToCart('${itemDoc.id}', '${item.name}', ${finalPrice})">Add to Order</button>
+                                <input type="number" id="qty-${safeId}" value="1" min="1" style="width: 50px; text-align: center;">
+                                <button class="add-btn" onclick="window.handleAddToCart('${itemDoc.id}', '${item.name}', ${finalPrice}, '${safeId}')">
+                                    Add to Order
+                                </button>
                             </div>
                         </div>
                     `;
@@ -74,8 +69,8 @@ async function fetchMenu() {
             }
         }
     } catch (error) {
-        console.error("Fetch Error:", error);
-        menuContainer.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        console.error("Menu Sync Error:", error);
+        menuContainer.innerHTML = `<p style="color:red;">Sync Error: ${error.message}</p>`;
     }
 }
 fetchMenu();
