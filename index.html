@@ -38,10 +38,10 @@
             font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #ffeeba;
         }
 
-        /* --- Main Layout: 關鍵佈局 --- */
+        /* --- Main Layout: 確保雙欄佈局 --- */
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 380px; /* 定義左右比例 */
+            grid-template-columns: 1fr 380px; 
             gap: 40px;
             max-width: 1400px;
             margin: 0 auto;
@@ -49,10 +49,10 @@
         }
 
         @media (max-width: 1100px) {
-            .main-content { grid-template-columns: 1fr; } /* 手機版切換 */
+            .main-content { grid-template-columns: 1fr; } 
         }
 
-        /* --- 菜單卡片外觀 --- */
+        /* --- 菜單渲染區 --- */
         .menu-section-title {
             font-family: 'Playfair Display', serif; font-size: 1.8rem;
             margin: 30px 0 20px 0; border-left: 5px solid var(--harvard-crimson); padding-left: 15px;
@@ -69,21 +69,18 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #eee;
             display: flex; flex-direction: column; transition: 0.3s;
         }
-        .item-card:hover { transform: translateY(-5px); }
 
-        /* --- 營養組成標籤 (Nutrient Tags) --- */
+        /* --- 關鍵：營養標籤樣式 --- */
         .nutrient-container {
             display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; min-height: 24px;
         }
-
         .nutrient-tag {
             background-color: var(--tag-bg); color: var(--tag-text);
             font-size: 10px; font-weight: 700; padding: 3px 8px;
             border-radius: 12px; display: inline-flex; align-items: center;
         }
-
         .nutrient-tag::before {
-            content: "•"; color: var(--medical-blue); margin-right: 4px; font-size: 14px;
+            content: "•"; color: var(--medical-blue); margin-right: 4px;
         }
 
         /* --- 訂單側邊欄 --- */
@@ -94,28 +91,15 @@
             border-top: 5px solid var(--medical-blue);
         }
 
-        .info-input { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; 
-            border-radius: 8px; margin-top: 8px; box-sizing: border-box; 
-        }
-
         #summary-text { 
             background: #f9f9f9; padding: 15px; border-radius: 8px; 
             font-family: 'Courier New', monospace; font-size: 0.85rem; 
             margin: 20px 0; border: 1px solid #eee; white-space: pre-wrap;
         }
 
-        .submit-btn { 
-            width: 100%; padding: 18px; background: var(--harvard-crimson); 
-            color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; 
-        }
-        .submit-btn:disabled { background: #ccc; }
-
-        .add-btn {
-            background: var(--slate-gray); color: white; border: none;
-            padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;
-        }
-        .add-btn:hover { background: var(--harvard-crimson); }
+        .info-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 8px; box-sizing: border-box; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--harvard-crimson); color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .add-btn { background: var(--slate-gray); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
     </style>
 </head>
@@ -130,40 +114,43 @@
     </nav>
 
     <div class="promo-banner">
-        🎓 <strong>Academic Privilege:</strong> Show Harvard ID at pickup for <strong>10% Discount</strong>.
+        🎓 <strong>Harvard Community:</strong> Settle payment at pickup for <strong>10% OFF</strong>.
     </div>
 
     <div class="main-content">
         <div id="menu-area">
-            <h1 style="font-family: 'Playfair Display'; font-size: 2.2rem;">Precision Nutrition</h1>
-            <p style="color: #666; margin-bottom: 30px;">Medical-grade ingredient analysis for optimal health.</p>
+            <header style="margin-bottom: 30px;">
+                <h1 style="font-family: 'Playfair Display'; font-size: 2.2rem; margin: 0;">Precision Nutrition</h1>
+                <p style="color: #666;">Medical-grade ingredient analysis for optimal health.</p>
+            </header>
             
             <div id="menu-container">
-                </div>
+                <p style="text-align: center; color: #999; padding: 40px;">Connecting to Kitchen Database...</p>
+            </div>
         </div>
 
         <aside class="order-sidebar" id="group-order-summary">
             <h2 style="font-family: 'Playfair Display'; margin-top: 0;">Your Order</h2>
             
-            <div id="empty-cart-msg" style="color: #999; text-align: center; padding: 30px 0;">
+            <div id="empty-cart-msg" style="text-align: center; padding: 30px 0; color: #999;">
                 <div style="font-size: 2rem; margin-bottom: 10px;">🛒</div>
                 Your medical meal plan is empty.
             </div>
             
             <div id="order-form-content" style="display: none;">
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.75rem; font-weight: bold; color: #888;">IDENTIFICATION</label>
-                    <input type="text" id="cust-id" class="info-input" placeholder="Name / Harvard ID">
+                    <label style="font-size: 0.75rem; font-weight: bold; color: #888;">NAME / HARVARD ID</label>
+                    <input type="text" id="cust-id" class="info-input" placeholder="e.g. John Harvard">
                 </div>
                 
                 <div style="margin-bottom: 15px;">
                     <label style="font-size: 0.75rem; font-weight: bold; color: #888;">CONTACT PHONE</label>
-                    <input type="tel" id="cust-phone" class="info-input" placeholder="617-XXX-XXXX">
+                    <input type="tel" id="cust-phone" class="info-input" placeholder="617-000-0000">
                 </div>
 
                 <pre id="summary-text"></pre>
                 
-                <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">CONFIRM ORDER</button>
+                <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">CONFIRM & PREPARE</button>
             </div>
         </aside>
     </div>
