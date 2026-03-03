@@ -1,46 +1,93 @@
 import { db } from './firebase-config.js';
-import { collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+    collection, query, where, getDocs, orderBy, doc, 
+    addDoc, updateDoc, runTransaction, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 智能取餐排程演算法 (Smart Pickup Scheduler) ---
+let cart = [];
+let currentSelectedSlot = null; // 追蹤當前分配的時段
+
+// --- 1. 獲取可用時段 ---
 async function getNextAvailableSlot() {
     try {
         const now = new Date();
-        // 將當前時間轉化為 ID 格式，例如 10:45 轉為 1045
         const currentTimeId = now.getHours() * 100 + now.getMinutes();
-        
         const slotsRef = collection(db, "pickup_slots");
-        // 嚴謹邏輯：只查詢啟用的時段，並按文檔 ID (時間) 排序
         const q = query(slotsRef, where("is_active", "==", true), orderBy("__name__"));
         const querySnapshot = await getDocs(q);
 
-        let selectedSlot = null;
-
-        for (const doc of querySnapshot.docs) {
-            const slotId = parseInt(doc.id);
-            const data = doc.data();
-            
-            // 周全防禦：
-            // 1. 該時段 ID 必須大於等於當前時間 (不顯示已過去的時段)
-            // 2. 預約人數必須小於最大容量
+        for (const docSnap of querySnapshot.docs) {
+            const slotId = parseInt(docSnap.id);
+            const data = docSnap.data();
             if (slotId >= currentTimeId && data.current_booked < data.max_capacity) {
-                selectedSlot = {
-                    id: doc.id,
-                    display: data.time_label // 直接抓取後台截圖中的 "11:30~11:45"
-                };
-                break;
+                currentSelectedSlot = { id: docSnap.id, ...data };
+                return currentSelectedSlot;
             }
         }
-
-        // 魯棒性：如果所有時段都滿了或找不到符合條件的區間
-        return selectedSlot || { id: "0", display: "All slots full - Please try tomorrow" };
-        
-    } catch (error) {
-        console.error("Scheduling Algorithm Error:", error);
-        return { id: "0", display: "System Busy - TBD" };
-    }
+        return null;
+    } catch (e) { console.error("Slot Error:", e); return null; }
 }
 
-// --- 渲染訂單摘要 (美語環境對齊) ---
+// --- 2. 核心提交功能 (真正寫入 Firebase) ---
+window.submitOrder = async () => {
+    if (cart.length === 0) return alert("Your cart is empty!");
+    if (!currentSelectedSlot) return alert("No pickup slots available.");
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerText = "Processing...";
+
+    try {
+        // 使用事務 (Transaction) 確保數據一致性：防禦多人併發下單
+        await runTransaction(db, async (transaction) => {
+            // A. 更新取餐時段計數
+            const slotRef = doc(db, "pickup_slots", currentSelectedSlot.id);
+            const slotSnap = await transaction.get(slotRef);
+            if (slotSnap.data().current_booked >= slotSnap.data().max_capacity) {
+                throw "This slot just filled up! Please refresh.";
+            }
+            transaction.update(slotRef, { current_booked: slotSnap.data().current_booked + 1 });
+
+            // B. 寫入訂單資料
+            const orderData = {
+                items: cart,
+                total_price: cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0) * 0.9,
+                pickup_slot: currentSelectedSlot.id,
+                pickup_time: currentSelectedSlot.time_label,
+                created_at: serverTimestamp(),
+                status: "pending"
+            };
+            const ordersRef = collection(db, "orders");
+            await addDoc(ordersRef, orderData);
+        });
+
+        alert("✅ Order Placed Successfully!");
+        cart = [];
+        renderSummary();
+        window.location.reload(); // 重新整理以更新最新庫存與時段
+    } catch (e) {
+        alert("Order Failed: " + e);
+        btn.disabled = false;
+        btn.innerText = "Place My Order";
+    }
+};
+
+// --- 3. 加入購物車 ---
+window.handleAddToCart = (itemId, itemName, price) => {
+    const qtyInput = document.getElementById(`qty-${itemId}`);
+    const quantity = parseInt(qtyInput.value);
+    const maxStock = parseInt(qtyInput.getAttribute('max'));
+
+    if (quantity <= 0 || quantity > maxStock) return alert("Invalid quantity or out of stock.");
+
+    const existing = cart.find(i => i.id === itemId);
+    if (existing) existing.quantity += quantity;
+    else cart.push({ id: itemId, name: itemName, unitPrice: price, quantity });
+
+    renderSummary();
+};
+
+// --- 4. 渲染摘要 (更新 UI 以包含提交按鈕) ---
 async function renderSummary() {
     const summarySection = document.getElementById('group-order-summary');
     const summaryText = document.getElementById('summary-text');
@@ -51,39 +98,20 @@ async function renderSummary() {
     }
 
     summarySection.style.display = 'block';
-    
-    // 非同步獲取最優取餐時間
     const slot = await getNextAvailableSlot();
     
     let subtotal = 0;
-    let itemsLines = `🛒 Sizzle & Drizzle | Your Order Summary\n`;
-    itemsLines += `==================================\n`;
+    let itemsLines = `🛒 Order Details\n====================\n`;
 
     cart.forEach(item => {
         const lineTotal = item.unitPrice * item.quantity;
         subtotal += lineTotal;
-        itemsLines += `• ${item.name} x${item.quantity}  >>  $${lineTotal.toFixed(2)}\n`;
+        itemsLines += `• ${item.name} x${item.quantity}: $${lineTotal.toFixed(2)}\n`;
     });
 
-    const harvardTotal = subtotal * 0.9;
-
-    itemsLines += `==================================\n`;
-    itemsLines += `ESTIMATED PICKUP WINDOW:\n`;
-    itemsLines += `👉 ${slot.display}\n`; // 這裡會精確顯示後台設定的標籤
-    itemsLines += `==================================\n`;
-    itemsLines += `SUBTOTAL: $${subtotal.toFixed(2)}\n`;
-    itemsLines += `CAMPUS PRICE (10% OFF): $${harvardTotal.toFixed(2)}\n`;
-    itemsLines += `==================================\n`;
-    itemsLines += `NOTE: Show Harvard ID at pickup.\n`;
-    itemsLines += `Order Sync: Academic Precision 🔬`;
+    itemsLines += `====================\n`;
+    itemsLines += `PICKUP: ${slot ? slot.time_label : 'FULL'}\n`;
+    itemsLines += `TOTAL (10% OFF): $${(subtotal * 0.9).toFixed(2)}\n`;
 
     summaryText.innerText = itemsLines;
 }
-
-// 保持複製功能
-window.copySummary = () => {
-    const text = document.getElementById('summary-text').innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        alert("✅ Order copied to clipboard!\nSend this to us via your preferred messenger.");
-    });
-};
