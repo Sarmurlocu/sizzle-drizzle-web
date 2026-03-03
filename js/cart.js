@@ -5,12 +5,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let cart = [];
-let currentSelectedSlot = null;
 
-// --- 1. 獲取可用時段 (強制校準至波士頓當地時間) ---
+// --- 1. 獲取可用時段 (強制校準至波士頓當地時間 EST) ---
 async function getNextAvailableSlot() {
     try {
-        // 抽象化：不論你在哪，都以美國東部時間 (EST) 為基準
         const estTime = new Intl.DateTimeFormat('en-US', {
             timeZone: 'America/New_York',
             hour: 'numeric',
@@ -29,10 +27,8 @@ async function getNextAvailableSlot() {
         for (const docSnap of querySnapshot.docs) {
             const slotId = parseInt(docSnap.id);
             const data = docSnap.data();
-            // 嚴謹邏輯：時段需晚於當前 EST 時間，且主廚還有產能
             if (slotId >= currentTimeId && data.current_booked < data.max_capacity) {
-                currentSelectedSlot = { id: docSnap.id, ...data };
-                return currentSelectedSlot;
+                return { id: docSnap.id, ...data };
             }
         }
         return null;
@@ -42,75 +38,32 @@ async function getNextAvailableSlot() {
     }
 }
 
-// --- 2. 核心提交功能 (包含身分校驗與產能鎖定) ---
-window.submitOrder = async () => {
-    const custId = document.getElementById('cust-id').value.trim();
-    const custPhone = document.getElementById('cust-phone').value.trim();
+// --- 2. 核心修改：renderSummary 函數 ---
+// 嚴謹邏輯：不隱藏 Sidebar 容器，僅切換內部內容
+async function renderSummary() {
+    const summarySection = document.getElementById('group-order-summary');
+    const emptyMsg = document.getElementById('empty-cart-msg');
+    const formContent = document.getElementById('order-form-content');
+    const summaryText = document.getElementById('summary-text');
 
-    // 周全防禦：基本資訊檢查
-    if (!custId || !custPhone) {
-        alert("Please provide your Name and Phone to secure the chef's time.");
+    // 魯棒性確保：如果 DOM 元素不存在則跳出，防止腳本崩潰
+    if (!summarySection || !summaryText) return;
+
+    // 確保 Sidebar 始終顯示以維持佈局美觀
+    summarySection.style.display = 'block';
+
+    // 邊界處理：購物車為空時
+    if (cart.length === 0) {
+        if (emptyMsg) emptyMsg.style.display = 'block';
+        if (formContent) formContent.style.display = 'none';
         return;
     }
 
-    if (cart.length === 0) return alert("Cart is empty!");
-    
-    const slot = await getNextAvailableSlot(); // 再次確認時段有效性
-    if (!slot) return alert("Chef is at full capacity. Please check back later.");
+    // 購物車有東西時
+    if (emptyMsg) emptyMsg.style.display = 'none';
+    if (formContent) formContent.style.display = 'block';
 
-    const btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.innerText = "Securing Capacity...";
-
-    try {
-        await runTransaction(db, async (transaction) => {
-            const slotRef = doc(db, "pickup_slots", slot.id);
-            const slotSnap = await transaction.get(slotRef);
-            
-            if (slotSnap.data().current_booked >= slotSnap.data().max_capacity) {
-                throw "Chef's slot just filled up!";
-            }
-
-            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-
-            const orderData = {
-                customer: { name: custId, phone: custPhone },
-                items: cart,
-                billing: {
-                    standard_total: subtotal,
-                    harvard_total: subtotal * 0.9
-                },
-                pickup_info: {
-                    slot_id: slot.id,
-                    time_label: slot.time_label
-                },
-                created_at: serverTimestamp(),
-                status: "confirmed"
-            };
-
-            transaction.update(slotRef, { current_booked: slotSnap.data().current_booked + 1 });
-            await addDoc(collection(db, "orders"), orderData);
-        });
-
-        alert(`Order confirmed! Chef is preparing your meal for ${slot.time_label}.`);
-        cart = [];
-        window.location.reload();
-    } catch (e) {
-        alert("Submission Error: " + e);
-        btn.disabled = false;
-        btn.innerText = "PLACE MY ORDER";
-    }
-};
-
-// --- 3. 渲染摘要 (UI 顯示邏輯) ---
-async function renderSummary() {
-    const summarySection = document.getElementById('group-order-summary');
-    const summaryText = document.getElementById('summary-text');
-    if (cart.length === 0) { summarySection.style.display = 'none'; return; }
-
-    summarySection.style.display = 'block';
     const slot = await getNextAvailableSlot();
-    
     let subtotal = 0;
     let itemsLines = `🛒 Order Detail for ${document.getElementById('cust-id').value || 'Guest'}\n`;
     itemsLines += `====================\n`;
@@ -122,7 +75,7 @@ async function renderSummary() {
     });
 
     itemsLines += `====================\n`;
-    itemsLines += `ESTIMATED PICKUP: ${slot ? slot.time_label : 'SLOTS FULL'}\n`;
+    itemsLines += `ESTIMATED PICKUP: ${slot ? slot.time_label : 'CHEF FULL'}\n`;
     itemsLines += `Standard Total: $${subtotal.toFixed(2)}\n`;
     itemsLines += `🎓 Harvard Price: $${(subtotal * 0.9).toFixed(2)}\n`;
     itemsLines += `====================\n`;
@@ -131,18 +84,72 @@ async function renderSummary() {
     summaryText.innerText = itemsLines;
 }
 
-// 監聽輸入以即時反映姓名
-document.getElementById('cust-id')?.addEventListener('input', renderSummary);
-
-// --- 4. 購物車邏輯 ---
+// --- 3. 購物車操作函數 ---
 window.handleAddToCart = (itemId, itemName, price) => {
     const qtyInput = document.getElementById(`qty-${itemId}`);
     const quantity = parseInt(qtyInput.value);
-    if (quantity <= 0) return;
+    
+    if (isNaN(quantity) || quantity <= 0) return;
 
     const existing = cart.find(i => i.id === itemId);
-    if (existing) existing.quantity += quantity;
-    else cart.push({ id: itemId, name: itemName, unitPrice: price, quantity });
+    if (existing) {
+        existing.quantity += quantity;
+    } else {
+        cart.push({ id: itemId, name: itemName, unitPrice: price, quantity });
+    }
 
     renderSummary();
 };
+
+// --- 4. 提交訂單 ---
+window.submitOrder = async () => {
+    const custId = document.getElementById('cust-id').value.trim();
+    const custPhone = document.getElementById('cust-phone').value.trim();
+
+    if (!custId || !custPhone) {
+        alert("Please enter Name and Phone to secure your order.");
+        return;
+    }
+
+    const slot = await getNextAvailableSlot();
+    if (!slot) return alert("All slots are full for now.");
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerText = "Processing...";
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            const slotRef = doc(db, "pickup_slots", slot.id);
+            const slotSnap = await transaction.get(slotRef);
+            
+            if (slotSnap.data().current_booked >= slotSnap.data().max_capacity) {
+                throw "Capacity reached!";
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+
+            const orderData = {
+                customer: { name: custId, phone: custPhone },
+                items: cart,
+                billing: { standard_total: subtotal, harvard_total: subtotal * 0.9 },
+                pickup_info: { slot_id: slot.id, time_label: slot.time_label },
+                created_at: serverTimestamp()
+            };
+
+            transaction.update(slotRef, { current_booked: slotSnap.data().current_booked + 1 });
+            await addDoc(collection(db, "orders"), orderData);
+        });
+
+        alert("Order Successful!");
+        cart = [];
+        window.location.reload();
+    } catch (e) {
+        alert("Error: " + e);
+        btn.disabled = false;
+        btn.innerText = "CONFIRM & PREPARE";
+    }
+};
+
+// 監聽姓名輸入即時更新摘要
+document.getElementById('cust-id')?.addEventListener('input', renderSummary);
