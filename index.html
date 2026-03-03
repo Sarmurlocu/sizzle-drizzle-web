@@ -12,48 +12,51 @@
             --primary-red: #d9534f;
             --primary-blue: #007bff;
             --success-green: #28a745;
-            --bg-gray: #f8f9fa;
+            --bg-gray: #fcfcfc;
+            --text-dark: #333333;
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 0; color: #333; 
+            margin: 0; padding: 0; color: var(--text-dark); 
             background-color: var(--bg-gray); 
             line-height: 1.6;
         }
 
-        /* --- Navigation --- */
+        /* --- Navigation Bar --- */
         .main-nav { 
             background: white; padding: 18px 40px; 
             display: flex; justify-content: space-between; align-items: center; 
             position: sticky; top: 0; z-index: 1000; 
-            box-shadow: 0 1px 5px rgba(0,0,0,0.05); 
+            box-shadow: 0 1px 10px rgba(0,0,0,0.05); 
         }
         .main-nav .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary-red); letter-spacing: -0.5px; }
         .main-nav a { text-decoration: none; color: #666; font-weight: 600; margin-left: 25px; font-size: 0.9rem; transition: 0.2s; }
         .main-nav a:hover, .main-nav a.active { color: var(--primary-red); }
 
-        /* --- Promo Banner --- */
+        /* --- Global Promo Banner --- */
         .promo-banner { 
             background: #fff3cd; padding: 12px; text-align: center; 
             border-bottom: 1px solid #ffeeba; font-size: 0.95rem; 
             color: #856404; font-weight: 500;
         }
-        .promo-banner strong { color: var(--primary-red); font-weight: 700; }
+        .promo-banner strong { color: var(--primary-red); }
 
-        /* --- Menu Container --- */
+        /* --- Menu Layout --- */
         #menu-container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
         .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
         
-        /* --- Item Cards --- */
+        /* --- Food Item Cards --- */
         .item-card { 
             background: white; border: 1px solid #eee; padding: 25px; 
             border-radius: 12px; display: flex; flex-direction: column; 
-            transition: 0.3s ease; position: relative;
+            transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            position: relative; justify-content: space-between;
         }
-        .item-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .item-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
         .item-card.out-of-stock { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
         
+        /* Nutrition Labels (Scientific UI) */
         .nutrition-badge { 
             display: inline-block; background-color: #f1f5f9; color: #475569; 
             font-size: 10px; padding: 3px 10px; border-radius: 4px; 
@@ -61,7 +64,7 @@
             margin-right: 5px; margin-bottom: 5px; text-transform: uppercase; 
         }
 
-        .price-container { margin: 15px 0 10px 0; font-size: 1.1rem; }
+        .price-container { margin: 15px 0 10px 0; font-size: 1.15rem; font-weight: 600; }
         .discount-tag { 
             background: #ffd7d7; color: var(--primary-red); 
             font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; 
@@ -70,37 +73,40 @@
         
         .add-btn { 
             background: var(--primary-blue); color: white; border: none; 
-            padding: 12px; border-radius: 6px; font-weight: bold; 
+            padding: 12px; border-radius: 8px; font-weight: bold; 
             cursor: pointer; width: 100%; transition: 0.2s; 
         }
         .add-btn:hover { background: #0056b3; }
 
-        /* --- Order Summary (The Action Area) --- */
+        /* --- Checkout Section (Updated for Price Logic) --- */
         #group-order-summary { 
             background: #fff; border: 2px dashed var(--primary-blue); 
-            padding: 30px; border-radius: 12px; margin: 40px auto; 
-            max-width: 800px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px; border-radius: 16px; margin: 50px auto; 
+            max-width: 700px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         }
+        #group-order-summary h3 { margin-top: 0; color: var(--primary-red); font-size: 1.3rem; }
+
         #summary-text { 
-            background: #f8f9fa; padding: 20px; border-radius: 8px; 
+            background: #f8f9fa; padding: 20px; border-radius: 10px; 
             font-family: 'Courier New', Courier, monospace; white-space: pre-wrap; 
-            font-size: 0.95rem; border: 1px solid #e9ecef;
+            font-size: 0.95rem; border: 1px solid #e9ecef; color: #444;
+            line-height: 1.5;
         }
         
         .submit-btn { 
             width: 100%; padding: 18px; background: var(--primary-red); 
-            color: white; border: none; border-radius: 8px; 
+            color: white; border: none; border-radius: 10px; 
             font-weight: 800; cursor: pointer; font-size: 1.1rem; 
-            margin-top: 20px; transition: 0.3s;
+            margin-top: 25px; transition: 0.3s;
+            letter-spacing: 0.5px;
         }
         .submit-btn:hover { background: #b52b27; transform: scale(1.01); }
-        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .submit-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        .footer-note { text-align: center; font-size: 0.8rem; color: #888; margin-top: 15px; }
-
-        /* Science Link Styles */
-        .science-link { font-size: 0.85rem; color: var(--primary-blue); text-decoration: none; margin-top: 10px; font-weight: 600; }
-        .science-link:hover { text-decoration: underline; }
+        .disclaimer { 
+            text-align: center; font-size: 0.8rem; color: #777; 
+            margin-top: 15px; padding: 0 10px;
+        }
     </style>
 </head>
 <body>
@@ -109,34 +115,32 @@
         <div class="logo">Sizzle & Drizzle</div>
         <div>
             <a href="index.html" class="active">Menu</a>
-            <a href="science.html">Our Science</a>
+            <a href="science.html">The Science</a>
         </div>
     </nav>
 
     <div class="promo-banner">
-        🎓 <strong>Campus Special:</strong> Show Harvard ID at pickup for <strong>10% OFF</strong> your order!
+        🎓 <strong>Affiliate Special:</strong> Present a valid Harvard ID at pickup for <strong>10% OFF</strong> your order.
     </div>
 
     <main id="menu-container">
-        <div style="text-align: center; padding: 100px;">
-            <p style="color: #666;">Analyzing Ingredients for Optimal Nutrition...</p>
+        <div style="text-align: center; padding: 80px;">
+            <p style="color: #999;">Loading Doctor-Designed Menu...</p>
         </div>
     </main>
 
     <section id="group-order-summary" style="display:none;">
-        <h3 style="margin-top:0; color: var(--primary-red); display: flex; align-items: center; gap: 10px;">
-            📋 Your Scientific Meal Order
-        </h3>
+        <h3>📋 Finalize Your Order</h3>
         
         <pre id="summary-text"></pre>
         
         <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">
-            CONFIRM & PLACE ORDER
+            PLACE MY ORDER
         </button>
         
-        <div class="footer-note">
-            *Clicking confirm will record your order in our system and secure your pickup slot.<br>
-            Please pay and verify your ID at the counter.
+        <div class="disclaimer">
+            *Standard price applies unless a valid Campus ID is verified during pickup.<br>
+            Your order will be synced with our kitchen once you click confirm.
         </div>
     </section>
 
