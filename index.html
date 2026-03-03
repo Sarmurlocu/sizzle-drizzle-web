@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sizzle & Drizzle | 哈佛醫學生主廚的台式低溫烹調</title>
+    <title>Sizzle & Drizzle | Scientific Taiwanese Cuisine by Harvard Medic</title>
     <style>
-        /* 基礎樣式與防禦性佈局 */
+        /* Base styles & Defensive Layout */
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; color: #333; background-color: #fafafa; scroll-behavior: smooth; }
         
-        /* 首頁品牌區 (Hero Section) */
+        /* Hero Section */
         #hero-section { 
             height: 80vh; 
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2000') center/cover; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center;
         }
         #hero-section h1 { font-size: 4em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        #hero-section p { font-size: 1.5em; max-width: 600px; margin-bottom: 30px; }
+        #hero-section p { font-size: 1.5em; max-width: 650px; margin-bottom: 30px; line-height: 1.4; }
         .order-trigger-btn { background: #d9534f; color: white; padding: 15px 40px; font-size: 1.2em; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(217,83,79,0.4); }
         .order-trigger-btn:hover { background: #c9302c; transform: translateY(-3px); }
 
-        /* 關於餐廳區 (About Section) */
-        #about-section { padding: 80px 20px; text-align: center; background: white; max-width: 800px; margin: 0 auto; line-height: 1.8; }
-        #about-section h2 { color: #d9534f; font-size: 2em; }
+        /* About Section */
+        #about-section { padding: 80px 20px; text-align: center; background: white; max-width: 850px; margin: 0 auto; line-height: 1.8; }
+        #about-section h2 { color: #d9534f; font-size: 2.2em; margin-bottom: 20px; }
+        #about-section p { font-size: 1.1em; color: #555; }
 
-        /* 點餐系統區 (Order System Section) */
+        /* Order System Section */
         #order-system-section { display: none; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
         .discount-banner { background: #fff3cd; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #ffeeba; text-align: center; }
         .menu-category { margin-top: 50px; }
@@ -32,7 +33,7 @@
         .item-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .price-tag { font-size: 1.3em; font-weight: bold; color: #d9534f; margin: 10px 0; }
         
-        /* 購物車摘要 */
+        /* Cart Summary */
         #group-order-summary { background: white; border: 2px dashed #007bff; padding: 30px; border-radius: 15px; margin-top: 50px; box-shadow: 0 4px 15px rgba(0,123,255,0.1); }
         #summary-text { background: #f8f9fa; padding: 20px; border: 1px solid #ddd; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 1.1em; border-radius: 8px; }
         .copy-btn { background: #28a745; color: white; width: 100%; border: none; padding: 15px; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 15px; }
@@ -42,29 +43,29 @@
 
     <header id="hero-section">
         <h1>Sizzle & Drizzle</h1>
-        <p>來自哈佛醫學院的科學烹調，重新定義台式午餐的營養與美味。</p>
-        <button class="order-trigger-btn" onclick="window.toggleOrderSystem()">開始點餐 Order Now 🛒</button>
+        <p>Scientific Taiwanese cooking from the heart of Harvard Medical School. Redefining nutrition and flavor for your daily lunch.</p>
+        <button class="order-trigger-btn" onclick="window.toggleOrderSystem()">Order Now 🛒</button>
     </header>
 
     <section id="about-section">
-        <h2>Doctor's Kitchen</h2>
-        <p>我們結合了臨床營養學與舒肥低溫烹調技術。每一道菜色都經過嚴格的熱量控管與食材篩選，確保你在繁忙的校園生活中，依然能獲得最純粹的營養補給。</p>
+        <h2>The Doctor's Kitchen</h2>
+        <p>We bridge clinical nutrition with sous-vide precision. Every dish is meticulously crafted with strict calorie control and premium ingredient selection, ensuring you receive pure, scientific nourishment amidst your busy campus life.</p>
     </section>
 
     <div id="order-system-section">
         <div class="discount-banner">
-            <p>🎓 <strong>Harvard Affiliate?</strong> 使用 @harvard.edu 信箱享 9 折優惠！</p>
-            <input type="email" id="user-email" placeholder="yourname@harvard.edu" style="padding: 10px; width: 250px; border-radius: 5px; border: 1px solid #ddd;">
-            <button onclick="window.applyDiscount()" style="background:#007bff; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">套用折扣</button>
+            <p>🎓 <strong>Harvard Affiliate?</strong> Enter your @harvard.edu email for 10% off!</p>
+            <input type="email" id="user-email" placeholder="yourname@harvard.edu" style="padding: 10px; width: 250px; border-radius: 5px; border: 1px solid #ddd; font-size: 1em;">
+            <button onclick="window.applyDiscount()" style="background:#007bff; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Apply Discount</button>
         </div>
 
         <main id="menu-container">
             </main>
 
         <section id="group-order-summary" style="display:none;">
-            <h3>🛒 本次訂購摘要 (一人代訂)</h3>
+            <h3>🛒 Group Order Summary</h3>
             <pre id="summary-text"></pre>
-            <button class="copy-btn" onclick="window.copySummary()">複製摘要至剪貼簿</button>
+            <button class="copy-btn" onclick="window.copySummary()">Copy Summary to Clipboard</button>
         </section>
     </div>
 
