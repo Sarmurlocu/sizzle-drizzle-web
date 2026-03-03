@@ -1,65 +1,34 @@
-// cart.js - 核心購物邏輯與誠信演算
+// cart.js - 誠信與效率優化版
 let cart = [];
-let globalDiscount = 1.0; // 預設無額外折扣
 
-// --- 1. 哈佛信箱折扣驗證 (演算法優化) ---
-window.applyDiscount = () => {
-    const emailInput = document.getElementById('user-email').value.trim();
-    const domain = emailInput.split('@')[1];
-
-    if (domain === 'harvard.edu') {
-        globalDiscount = 0.9; // 9折優惠
-        alert("✅ Harvard Verification Successful! 10% discount applied to your total.");
-    } else {
-        globalDiscount = 1.0;
-        alert("ℹ️ Standard pricing applied. Use a @harvard.edu email for affiliate discounts.");
-    }
-    renderSummary(); // 重新渲染，確保價格即時更新
-};
-
-// --- 2. 加入購物車 (周全防禦：確保價格與數量合法) ---
+// --- 1. 加入購物車 (嚴謹邏輯：對齊 Firebase 數據) ---
 window.handleAddToCart = (itemId, itemName, price) => {
     const qtyInput = document.getElementById(`qty-${itemId}`);
     const quantity = parseInt(qtyInput.value);
     const maxStock = parseInt(qtyInput.getAttribute('max'));
 
-    // 邊界檢查：確保數量大於0且不超過庫存
-    if (quantity <= 0 || isNaN(quantity)) {
-        alert("Please enter a valid quantity.");
-        return;
-    }
+    if (quantity <= 0 || isNaN(quantity)) return;
     if (quantity > maxStock) {
-        alert(`❌ Error: Only ${maxStock} units left in stock.`);
+        alert(`Sorry, only ${maxStock} left in stock.`);
         return;
     }
 
-    // 嚴謹邏輯：檢查購物車是否已有此品項
     const existingItem = cart.find(item => item.id === itemId);
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
-        cart.push({
-            id: itemId,
-            name: itemName,
-            unitPrice: price, // 這裡傳入的是 Firebase 判斷後的折扣價
-            quantity: quantity
-        });
+        cart.push({ id: itemId, name: itemName, unitPrice: price, quantity: quantity });
     }
 
     renderSummary();
     
-    // 視覺回饋
+    // 按鈕回饋
     const btn = event.target;
-    const originalText = btn.innerText;
     btn.innerText = "Added! ✓";
-    btn.style.background = "#28a745";
-    setTimeout(() => {
-        btn.innerText = originalText;
-        btn.style.background = "#007bff";
-    }, 1000);
+    setTimeout(() => { btn.innerText = "Add to Order"; }, 1000);
 };
 
-// --- 3. 渲染訂單摘要 (誠信展示：列出明細與最終折扣) ---
+// --- 2. 渲染摘要 (透明度優化：同時顯示標準價與哈佛價) ---
 function renderSummary() {
     const summarySection = document.getElementById('group-order-summary');
     const summaryText = document.getElementById('summary-text');
@@ -70,38 +39,32 @@ function renderSummary() {
     }
 
     summarySection.style.display = 'block';
-    
-    let rawTotal = 0;
-    let itemsHtml = `Sizzle & Drizzle Order Summary\n`;
-    itemsHtml += `----------------------------------\n`;
+    let subtotal = 0;
+    let itemsLines = `Sizzle & Drizzle | Official Order\n`;
+    itemsLines += `==================================\n`;
 
     cart.forEach(item => {
-        const itemTotal = item.unitPrice * item.quantity;
-        rawTotal += itemTotal;
-        itemsHtml += `• ${item.name} x${item.quantity}: $${itemTotal.toFixed(2)}\n`;
+        const lineTotal = item.unitPrice * item.quantity;
+        subtotal += lineTotal;
+        itemsLines += `• ${item.name} x${item.quantity}: $${lineTotal.toFixed(2)}\n`;
     });
 
-    const finalTotal = rawTotal * globalDiscount;
-    const discountAmount = rawTotal - finalTotal;
+    const harvardTotal = subtotal * 0.9;
 
-    itemsHtml += `----------------------------------\n`;
-    itemsHtml += `Subtotal: $${rawTotal.toFixed(2)}\n`;
-    
-    if (globalDiscount < 1.0) {
-        itemsHtml += `Affiliate Discount (10%): -$${discountAmount.toFixed(2)}\n`;
-    }
-    
-    itemsHtml += `TOTAL PAYABLE: $${finalTotal.toFixed(2)}\n`;
-    itemsHtml += `----------------------------------\n`;
-    itemsHtml += `Prepared with Medical Precision 🔬`;
+    itemsLines += `==================================\n`;
+    itemsLines += `STANDARD TOTAL: $${subtotal.toFixed(2)}\n`;
+    itemsLines += `🎓 HARVARD PRICE: $${harvardTotal.toFixed(2)}\n`;
+    itemsLines += `==================================\n`;
+    itemsLines += `Note: Show Harvard ID during pickup for 10% off.\n`;
+    itemsLines += `Prepared with Medical Integrity 🔬`;
 
-    summaryText.innerText = itemsHtml;
+    summaryText.innerText = itemsLines;
 }
 
-// --- 4. 複製摘要 (方便 WhatsApp/Slack 點餐) ---
+// --- 3. 複製功能 ---
 window.copySummary = () => {
     const text = document.getElementById('summary-text').innerText;
     navigator.clipboard.writeText(text).then(() => {
-        alert("Order summary copied to clipboard! You can now paste it to your group chat.");
+        alert("Summary copied! Please paste it into your messaging app.");
     });
 };
