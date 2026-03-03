@@ -1,91 +1,107 @@
-// Data Structure: Using an object to manage items efficiently (Algorithm Optimization)
-let cart = {};
-let discountRate = 1.0;
+// cart.js - 核心購物邏輯與誠信演算
+let cart = [];
+let globalDiscount = 1.0; // 預設無額外折扣
 
-// 1. Discount Logic (Boundary Check: Email Validation)
+// --- 1. 哈佛信箱折扣驗證 (演算法優化) ---
 window.applyDiscount = () => {
-    const email = document.getElementById('user-email').value;
-    // Strict logic: Harvard domain check
-    if (email.toLowerCase().endsWith('@harvard.edu')) {
-        discountRate = 0.9;
-        alert("Success! 10% Harvard discount applied to your order.");
-        updateSummary();
+    const emailInput = document.getElementById('user-email').value.trim();
+    const domain = emailInput.split('@')[1];
+
+    if (domain === 'harvard.edu') {
+        globalDiscount = 0.9; // 9折優惠
+        alert("✅ Harvard Verification Successful! 10% discount applied to your total.");
     } else {
-        alert("Please enter a valid @harvard.edu email address to claim the discount.");
+        globalDiscount = 1.0;
+        alert("ℹ️ Standard pricing applied. Use a @harvard.edu email for affiliate discounts.");
     }
+    renderSummary(); // 重新渲染，確保價格即時更新
 };
 
-// 2. Add to Cart Logic (Abstraction: Merging duplicates)
-window.handleAddToCart = (itemId, name, basePrice) => {
+// --- 2. 加入購物車 (周全防禦：確保價格與數量合法) ---
+window.handleAddToCart = (itemId, itemName, price) => {
     const qtyInput = document.getElementById(`qty-${itemId}`);
-    const quantity = parseInt(qtyInput.value) || 0;
+    const quantity = parseInt(qtyInput.value);
+    const maxStock = parseInt(qtyInput.getAttribute('max'));
 
-    // Robustness: Ensure positive quantity
-    if (quantity <= 0) {
-        alert("Please enter a valid quantity (1 or more).");
+    // 邊界檢查：確保數量大於0且不超過庫存
+    if (quantity <= 0 || isNaN(quantity)) {
+        alert("Please enter a valid quantity.");
+        return;
+    }
+    if (quantity > maxStock) {
+        alert(`❌ Error: Only ${maxStock} units left in stock.`);
         return;
     }
 
-    if (cart[itemId]) {
-        cart[itemId].quantity += quantity;
+    // 嚴謹邏輯：檢查購物車是否已有此品項
+    const existingItem = cart.find(item => item.id === itemId);
+    if (existingItem) {
+        existingItem.quantity += quantity;
     } else {
-        cart[itemId] = {
-            name: name,
-            price: basePrice,
+        cart.push({
+            id: itemId,
+            name: itemName,
+            unitPrice: price, // 這裡傳入的是 Firebase 判斷後的折扣價
             quantity: quantity
-        };
+        });
     }
 
-    qtyInput.value = 1; // Reset input field
-    updateSummary();
+    renderSummary();
+    
+    // 視覺回饋
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = "Added! ✓";
+    btn.style.background = "#28a745";
+    setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.background = "#007bff";
+    }, 1000);
 };
 
-// 3. Update Visual Summary (Explicit Scope: UI Feedback)
-function updateSummary() {
+// --- 3. 渲染訂單摘要 (誠信展示：列出明細與最終折扣) ---
+function renderSummary() {
     const summarySection = document.getElementById('group-order-summary');
     const summaryText = document.getElementById('summary-text');
     
-    const items = Object.keys(cart);
-    if (items.length === 0) {
+    if (cart.length === 0) {
         summarySection.style.display = 'none';
         return;
     }
 
     summarySection.style.display = 'block';
     
-    // Formatting for the US audience
-    let text = "📋 --- Sizzle & Drizzle Order Summary ---\n\n";
-    let total = 0;
+    let rawTotal = 0;
+    let itemsHtml = `Sizzle & Drizzle Order Summary\n`;
+    itemsHtml += `----------------------------------\n`;
 
-    items.forEach(id => {
-        const item = cart[id];
-        const finalPrice = item.price * discountRate;
-        const subtotal = finalPrice * item.quantity;
-        total += subtotal;
-        
-        // Formatting: "Item Name x Quantity = $Amount"
-        text += `▪️ ${item.name} x ${item.quantity} = $${subtotal.toFixed(2)}\n`;
+    cart.forEach(item => {
+        const itemTotal = item.unitPrice * item.quantity;
+        rawTotal += itemTotal;
+        itemsHtml += `• ${item.name} x${item.quantity}: $${itemTotal.toFixed(2)}\n`;
     });
 
-    text += `\n----------------------------------\n`;
-    text += `TOTAL AMOUNT: $${total.toFixed(2)}\n`;
-    if (discountRate < 1.0) {
-        text += `(10% Harvard Discount Applied ✅)\n`;
-    }
-    text += `\nOrdered by: [Enter Your Name]`;
+    const finalTotal = rawTotal * globalDiscount;
+    const discountAmount = rawTotal - finalTotal;
+
+    itemsHtml += `----------------------------------\n`;
+    itemsHtml += `Subtotal: $${rawTotal.toFixed(2)}\n`;
     
-    summaryText.innerText = text;
+    if (globalDiscount < 1.0) {
+        itemsHtml += `Affiliate Discount (10%): -$${discountAmount.toFixed(2)}\n`;
+    }
+    
+    itemsHtml += `TOTAL PAYABLE: $${finalTotal.toFixed(2)}\n`;
+    itemsHtml += `----------------------------------\n`;
+    itemsHtml += `Prepared with Medical Precision 🔬`;
+
+    summaryText.innerText = itemsHtml;
 }
 
-// 4. Clipboard Logic (Robustness: Error Handling)
+// --- 4. 複製摘要 (方便 WhatsApp/Slack 點餐) ---
 window.copySummary = () => {
-    const summaryText = document.getElementById('summary-text').innerText;
-    if (!summaryText) return;
-
-    navigator.clipboard.writeText(summaryText).then(() => {
-        alert("Order list copied to clipboard! You can now paste it into WhatsApp or Slack.");
-    }).catch(err => {
-        console.error("Copy failed", err);
-        alert("Failed to copy. Please manually select and copy the text.");
+    const text = document.getElementById('summary-text').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Order summary copied to clipboard! You can now paste it to your group chat.");
     });
 };
