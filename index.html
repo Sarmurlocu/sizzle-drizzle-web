@@ -9,188 +9,121 @@
 
     <style>
         :root {
-            --harvard-crimson: #A51C30; /* 哈佛官方紅 */
-            --slate-gray: #333E48;      /* 專業學術灰 */
-            --soft-white: #fcfcfc;
+            --harvard-crimson: #A51C30;
+            --slate-gray: #333E48;
             --medical-blue: #007bff;
+            --soft-bg: #f8f9fa;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 0; 
-            background-color: var(--soft-white); 
+            margin: 0; background-color: var(--soft-bg); 
             color: var(--slate-gray); 
-            line-height: 1.6;
         }
 
-        /* --- Navigation: 修正按鈕靠近問題 --- */
+        /* --- Navigation --- */
         .main-nav { 
-            background: white; 
-            padding: 20px 60px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            background: white; padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 1000; 
             border-bottom: 3px solid var(--harvard-crimson);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
-        .main-nav .logo { 
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem; 
-            font-weight: 700; 
-            color: var(--harvard-crimson); 
-            text-decoration: none;
-        }
-        
-        .nav-links { display: flex; align-items: center; }
-        .nav-links a { 
-            text-decoration: none; 
-            color: var(--slate-gray); 
-            font-weight: 600; 
-            font-size: 0.95rem;
-            margin-left: 35px; /* 增加間距解決擠在一起的問題 */
-            transition: 0.3s;
-            padding: 8px 15px;
-            border-radius: 5px;
-        }
-        .nav-links a:hover { 
-            color: var(--harvard-crimson); 
-            background-color: #f8f9fa;
-        }
-        .nav-links a.active { color: var(--harvard-crimson); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--harvard-crimson); text-decoration: none; font-weight: 700; }
+        .nav-links a { text-decoration: none; color: var(--slate-gray); font-weight: 600; margin-left: 30px; font-size: 0.9rem; }
 
-        /* --- Banner --- */
-        .promo-banner { 
-            background: #fff3cd; 
-            padding: 12px; 
-            text-align: center; 
-            border-bottom: 1px solid #ffeeba; 
-            font-size: 0.9rem; 
-            color: #856404;
-            font-weight: 600;
-        }
-
-        /* --- Menu Content --- */
-        #menu-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-        
-        /* 頁面大標題風格 */
-        .page-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .page-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--slate-gray);
-            margin-bottom: 10px;
-        }
-        .page-header p {
-            color: #666;
-            font-size: 1.1rem;
-            max-width: 600px;
+        /* --- Main Layout: 解決留白問題 --- */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 380px; /* 左側菜單，右側固定訂單欄 */
+            gap: 30px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 40px 5%;
         }
 
-        /* --- Checkout Section: 專業化與資料輸入 --- */
-        #group-order-summary { 
-            background: white; 
-            border: 1px solid #e1e4e8;
-            border-left: 5px solid var(--medical-blue); /* 醫療感側邊條 */
-            padding: 35px; 
-            border-radius: 12px; 
-            margin: 60px auto; 
-            max-width: 750px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        @media (max-width: 1100px) {
+            .main-content { grid-template-columns: 1fr; } /* 手機版切換為單欄 */
         }
 
-        .section-title {
+        /* --- Menu Section --- */
+        .menu-section-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: var(--slate-gray);
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+            font-size: 1.8rem;
+            margin: 30px 0 20px 0;
+            grid-column: 1 / -1; /* 標題橫跨全寬 */
+            border-left: 5px solid var(--harvard-crimson);
+            padding-left: 15px;
         }
 
-        /* 輸入欄位樣式 */
-        .input-grid { 
+        /* 卡片容器：自動填充 */
+        .items-grid { 
             display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
-            margin-bottom: 25px; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
         }
-        .input-field {
+
+        /* --- 卡片美化：具體化外觀 --- */
+        .item-card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: var(--card-shadow);
+            border: 1px solid #eee;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
         }
-        .input-field label {
-            font-size: 0.8rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            color: #888;
-        }
-        .info-input { 
-            padding: 12px 15px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-        .info-input:focus { 
-            border-color: var(--medical-blue); 
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-            outline: none; 
+        .item-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(165, 28, 48, 0.1); 
         }
 
-        /* 訂單明細風格 */
+        .item-card h3 { margin: 0 0 10px 0; font-size: 1.2rem; }
+        .nutrition-tags { font-size: 0.75rem; color: #777; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; }
+        
+        .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 15px; }
+        .current-price { font-size: 1.3rem; font-weight: 800; color: var(--harvard-crimson); }
+        .old-price { font-size: 0.9rem; text-decoration: line-through; color: #aaa; }
+
+        .add-btn {
+            background: var(--slate-gray); color: white; border: none;
+            padding: 12px; border-radius: 8px; font-weight: bold;
+            cursor: pointer; transition: 0.2s;
+        }
+        .add-btn:hover { background: var(--harvard-crimson); }
+
+        /* --- 右側訂單欄：Side Checkout --- */
+        .order-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border-top: 4px solid var(--medical-blue);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.8rem; font-weight: 700; color: #888; margin-bottom: 5px; }
+        .info-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+
         #summary-text { 
-            background: #fdfdfd; 
-            padding: 20px; 
-            border: 1px solid #f0f0f0;
-            border-radius: 8px; 
-            font-family: 'Courier New', Courier, monospace; 
-            white-space: pre-wrap; 
-            font-size: 0.95rem; 
-            color: #444;
+            background: #f9f9f9; padding: 15px; border-radius: 8px; 
+            font-family: 'Courier New', monospace; font-size: 0.85rem; 
+            margin: 20px 0; line-height: 1.4; border: 1px solid #eee;
         }
 
         .submit-btn { 
-            width: 100%; 
-            padding: 20px; 
-            background: linear-gradient(135deg, var(--harvard-crimson), #821627);
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            font-size: 1.2rem; 
-            margin-top: 25px; 
-            transition: 0.4s;
-            box-shadow: 0 6px 15px rgba(165, 28, 48, 0.3);
+            width: 100%; padding: 18px; background: var(--harvard-crimson); 
+            color: white; border: none; border-radius: 10px; 
+            font-weight: 800; cursor: pointer; font-size: 1.1rem; 
         }
-        .submit-btn:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(165, 28, 48, 0.4);
-        }
-        .submit-btn:disabled { background: #cbd5e0; transform: none; box-shadow: none; cursor: not-allowed; }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .footer-note { 
-            text-align: center; 
-            font-size: 0.85rem; 
-            color: #999; 
-            margin-top: 20px; 
-            font-style: italic;
-        }
-
-        /* 手機版調整 */
-        @media (max-width: 600px) {
-            .input-grid { grid-template-columns: 1fr; }
-            .main-nav { padding: 15px 20px; }
-            .nav-links a { margin-left: 15px; font-size: 0.8rem; }
-        }
     </style>
 </head>
 <body>
@@ -198,47 +131,43 @@
     <nav class="main-nav">
         <a href="index.html" class="logo">Sizzle & Drizzle</a>
         <div class="nav-links">
-            <a href="index.html" class="active">Daily Menu</a>
+            <a href="index.html">Daily Menu</a>
             <a href="science.html">The Science</a>
         </div>
     </nav>
 
-    <div class="promo-banner">
-        🎓 <strong>Academic Privilege:</strong> Show Harvard ID at pickup for <strong>10% Discount</strong>.
+    <div class="main-content">
+        <div id="menu-area">
+            <div class="page-header" style="margin-bottom: 40px;">
+                <h1 style="font-family: 'Playfair Display'; font-size: 2.5rem; margin-bottom: 10px;">Precision Nutrition</h1>
+                <p style="color: #666;">Scientifically balanced meals for Harvard minds.</p>
+            </div>
+            
+            <div id="menu-container">
+                <p style="text-align:center; padding:50px; color:#999;">Synchronizing with Kitchen...</p>
+            </div>
+        </div>
+
+        <aside class="order-sidebar" id="group-order-summary" style="display:none;">
+            <h2 style="font-family: 'Playfair Display'; margin-top: 0;">Your Order</h2>
+            
+            <div class="input-group">
+                <label>NAME / ID</label>
+                <input type="text" id="cust-id" class="info-input" placeholder="Enter Name">
+            </div>
+            <div class="input-group">
+                <label>PHONE</label>
+                <input type="tel" id="cust-phone" class="info-input" placeholder="617-XXX-XXXX">
+            </div>
+
+            <pre id="summary-text"></pre>
+            
+            <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">CONFIRM ORDER</button>
+            <p style="font-size: 0.75rem; color: #999; text-align: center; margin-top: 15px;">
+                *Show ID at pickup for 10% discount.
+            </p>
+        </aside>
     </div>
-
-    <main id="menu-container">
-        <header class="page-header">
-            <h1>Precision Nutrition</h1>
-            <p>Curated by Harvard Medical researchers. Designed for cognitive performance and metabolic health.</p>
-        </header>
-        </main>
-
-    <section id="group-order-summary" style="display:none;">
-        <div class="section-title">Finalize Your Scientific Meal</div>
-        
-        <div class="input-grid">
-            <div class="input-field">
-                <label>Student/Faculty Name</label>
-                <input type="text" id="cust-id" class="info-input" placeholder="Full Name" required>
-            </div>
-            <div class="input-field">
-                <label>Contact Phone</label>
-                <input type="tel" id="cust-phone" class="info-input" placeholder="617-000-0000" required>
-            </div>
-        </div>
-
-        <pre id="summary-text"></pre>
-        
-        <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">
-            CONFIRM & START COOKING
-        </button>
-        
-        <div class="footer-note">
-            *Chef starts preparation immediately after confirmation.<br>
-            Please settle payment and ID verification at the counter.
-        </div>
-    </section>
 
     <script type="module" src="js/menu.js"></script>
     <script type="module" src="js/cart.js"></script>
