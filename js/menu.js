@@ -11,7 +11,10 @@ function formatNutrients(nutrientString) {
     ).join('');
 }
 
-// 嚴謹邏輯：安全地格式化價格，防止 undefined 導致 toFixed 報錯
+/**
+ * 嚴謹邏輯：安全地格式化價格
+ * 目的：防止資料庫欄位為空時，對 undefined 執行 toFixed 導致系統崩潰
+ */
 function safePrice(price) {
     const num = parseFloat(price);
     return isNaN(num) ? "0.00" : num.toFixed(2);
@@ -35,7 +38,7 @@ async function fetchMenu() {
             const catData = catDoc.data();
             const catDisplayName = catData.display_name || catDoc.id;
             
-            // 指向：menu -> {類別} -> items
+            // 明確的範圍：指向 menu -> {類別} -> items
             const itemsRef = collection(db, "menu", catDoc.id, "items");
             const itemsSnapshot = await getDocs(itemsRef);
 
@@ -51,6 +54,7 @@ async function fetchMenu() {
                     const item = itemDoc.data();
                     
                     // --- 周全的防禦：確保價格存在且為數字 ---
+                    // 即使資料庫漏填欄位，也能給予預設值
                     const basePrice = item.price || 0;
                     const discPrice = item.discount_price || 0;
                     const isDiscounted = item.is_discounted === true;
