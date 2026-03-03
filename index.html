@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sizzle & Drizzle | Harvard Medical-Grade Cuisine</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
     <style>
@@ -12,23 +13,35 @@
             --slate-gray: #333E48;
             --medical-blue: #007bff;
             --soft-bg: #f8f9fa;
+            --tag-bg: #eef2f7;
+            --tag-text: #475569;
         }
 
-        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; background-color: var(--soft-bg); 
+            color: var(--slate-gray); 
+        }
 
-        /* --- 導覽列 --- */
+        /* --- Navigation --- */
         .main-nav { 
-            background: white; padding: 15px 5%; display: flex; 
-            justify-content: space-between; align-items: center; 
-            position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--harvard-crimson);
+            background: white; padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 1000; 
+            border-bottom: 3px solid var(--harvard-crimson);
         }
         .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--harvard-crimson); text-decoration: none; font-weight: 700; }
-        .nav-links a { text-decoration: none; color: var(--slate-gray); font-weight: 600; margin-left: 30px; }
+        .nav-links a { text-decoration: none; color: var(--slate-gray); font-weight: 600; margin-left: 30px; font-size: 0.9rem; }
 
-        /* --- 主佈局：解決訂單不顯示問題 --- */
+        .promo-banner { 
+            background: #fff3cd; padding: 10px; text-align: center; 
+            font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #ffeeba;
+        }
+
+        /* --- Main Layout: 關鍵佈局 --- */
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 380px; /* 這裡定義了右側 380px 空間 */
+            grid-template-columns: 1fr 380px; /* 定義左右比例 */
             gap: 40px;
             max-width: 1400px;
             margin: 0 auto;
@@ -36,34 +49,74 @@
         }
 
         @media (max-width: 1100px) {
-            .main-content { grid-template-columns: 1fr; }
+            .main-content { grid-template-columns: 1fr; } /* 手機版切換 */
         }
 
-        /* 菜單區 */
-        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .item-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-
-        /* 營養標籤 */
-        .nutrient-container { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-        .nutrient-tag { 
-            background: #eef2f7; font-size: 10px; padding: 3px 8px; border-radius: 10px; 
-            display: inline-flex; align-items: center; font-weight: bold;
+        /* --- 菜單卡片外觀 --- */
+        .menu-section-title {
+            font-family: 'Playfair Display', serif; font-size: 1.8rem;
+            margin: 30px 0 20px 0; border-left: 5px solid var(--harvard-crimson); padding-left: 15px;
         }
-        .nutrient-tag::before { content: "•"; color: var(--medical-blue); margin-right: 4px; }
 
-        /* --- 右側訂單欄樣式 --- */
+        .items-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
+        }
+
+        .item-card { 
+            background: white; padding: 25px; border-radius: 16px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #eee;
+            display: flex; flex-direction: column; transition: 0.3s;
+        }
+        .item-card:hover { transform: translateY(-5px); }
+
+        /* --- 營養組成標籤 (Nutrient Tags) --- */
+        .nutrient-container {
+            display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; min-height: 24px;
+        }
+
+        .nutrient-tag {
+            background-color: var(--tag-bg); color: var(--tag-text);
+            font-size: 10px; font-weight: 700; padding: 3px 8px;
+            border-radius: 12px; display: inline-flex; align-items: center;
+        }
+
+        .nutrient-tag::before {
+            content: "•"; color: var(--medical-blue); margin-right: 4px; font-size: 14px;
+        }
+
+        /* --- 訂單側邊欄 --- */
         .order-sidebar {
             position: sticky; top: 100px; height: fit-content;
             background: white; padding: 30px; border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             border-top: 5px solid var(--medical-blue);
-            /* 初始狀態設為 block，但內容由 JS 控制隱藏或顯示提示 */
-            display: block; 
         }
 
-        .info-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
-        #summary-text { background: #f9f9f9; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; margin: 15px 0; border: 1px solid #eee; }
-        .submit-btn { width: 100%; padding: 18px; background: var(--harvard-crimson); color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .info-input { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; 
+            border-radius: 8px; margin-top: 8px; box-sizing: border-box; 
+        }
+
+        #summary-text { 
+            background: #f9f9f9; padding: 15px; border-radius: 8px; 
+            font-family: 'Courier New', monospace; font-size: 0.85rem; 
+            margin: 20px 0; border: 1px solid #eee; white-space: pre-wrap;
+        }
+
+        .submit-btn { 
+            width: 100%; padding: 18px; background: var(--harvard-crimson); 
+            color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; 
+        }
+        .submit-btn:disabled { background: #ccc; }
+
+        .add-btn {
+            background: var(--slate-gray); color: white; border: none;
+            padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+        .add-btn:hover { background: var(--harvard-crimson); }
+
     </style>
 </head>
 <body>
@@ -76,34 +129,47 @@
         </div>
     </nav>
 
+    <div class="promo-banner">
+        🎓 <strong>Academic Privilege:</strong> Show Harvard ID at pickup for <strong>10% Discount</strong>.
+    </div>
+
     <div class="main-content">
         <div id="menu-area">
-            <h1 style="font-family: 'Playfair Display';">Precision Nutrition</h1>
-            <div id="menu-container"></div>
+            <h1 style="font-family: 'Playfair Display'; font-size: 2.2rem;">Precision Nutrition</h1>
+            <p style="color: #666; margin-bottom: 30px;">Medical-grade ingredient analysis for optimal health.</p>
+            
+            <div id="menu-container">
+                </div>
         </div>
 
         <aside class="order-sidebar" id="group-order-summary">
             <h2 style="font-family: 'Playfair Display'; margin-top: 0;">Your Order</h2>
-            <div id="empty-cart-msg" style="color: #999; text-align: center; padding: 20px;">
+            
+            <div id="empty-cart-msg" style="color: #999; text-align: center; padding: 30px 0;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🛒</div>
                 Your medical meal plan is empty.
             </div>
             
             <div id="order-form-content" style="display: none;">
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.7rem; font-weight: bold;">NAME / ID</label>
-                    <input type="text" id="cust-id" class="info-input">
+                    <label style="font-size: 0.75rem; font-weight: bold; color: #888;">IDENTIFICATION</label>
+                    <input type="text" id="cust-id" class="info-input" placeholder="Name / Harvard ID">
                 </div>
+                
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.7rem; font-weight: bold;">PHONE</label>
-                    <input type="tel" id="cust-phone" class="info-input">
+                    <label style="font-size: 0.75rem; font-weight: bold; color: #888;">CONTACT PHONE</label>
+                    <input type="tel" id="cust-phone" class="info-input" placeholder="617-XXX-XXXX">
                 </div>
+
                 <pre id="summary-text"></pre>
-                <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">PLACE MY ORDER</button>
+                
+                <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">CONFIRM ORDER</button>
             </div>
         </aside>
     </div>
 
     <script type="module" src="js/menu.js"></script>
     <script type="module" src="js/cart.js"></script>
+
 </body>
 </html>
