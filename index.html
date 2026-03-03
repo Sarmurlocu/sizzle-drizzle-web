@@ -8,25 +8,48 @@
     <style>
         :root { --primary-red: #d9534f; --primary-blue: #007bff; --bg-gray: #fcfcfc; }
         body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-gray); color: #333; }
-        .main-nav { background: white; padding: 18px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
+        
+        /* --- 修正後的導航列 --- */
+        .main-nav { 
+            background: white; 
+            padding: 18px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 1px 10px rgba(0,0,0,0.05); 
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
         .main-nav .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary-red); }
+        
+        /* 增加間距與樣式優化 */
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: #555; 
+            font-weight: 600; 
+            font-size: 0.9rem;
+            margin-left: 30px; /* 增加間距解決太靠近的問題 */
+            transition: 0.2s;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        .nav-links a:hover { color: var(--primary-red); background-color: #fff5f5; }
+        .nav-links a.active { color: var(--primary-red); }
+
         .promo-banner { background: #fff3cd; padding: 12px; text-align: center; border-bottom: 1px solid #ffeeba; font-size: 0.95rem; }
         
         #menu-container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
         .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-        .item-card { background: white; border: 1px solid #eee; padding: 25px; border-radius: 12px; transition: 0.3s; }
         
         /* Checkout Section */
         #group-order-summary { background: #fff; border: 2px dashed var(--primary-blue); padding: 30px; border-radius: 16px; margin: 40px auto; max-width: 700px; }
-        
-        /* Customer Info Fields (New Boundary Check) */
         .info-group { margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .info-input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
-        .info-input:focus { border-color: var(--primary-blue); outline: none; }
-
-        #summary-text { background: #f8f9fa; padding: 20px; border-radius: 10px; font-family: monospace; white-space: pre-wrap; font-size: 0.95rem; border: 1px solid #e9ecef; }
+        
+        #summary-text { background: #f8f9fa; padding: 20px; border-radius: 10px; font-family: monospace; white-space: pre-wrap; font-size: 0.95rem; }
         .submit-btn { width: 100%; padding: 18px; background: var(--primary-red); color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 1.1rem; margin-top: 20px; }
-        .submit-btn:disabled { background: #ccc; }
         .disclaimer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 15px; }
     </style>
 </head>
@@ -34,28 +57,28 @@
 
     <nav class="main-nav">
         <div class="logo">Sizzle & Drizzle</div>
-        <div><a href="index.html">Menu</a><a href="science.html">The Science</a></div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Menu</a>
+            <a href="science.html">The Science</a>
+        </div>
     </nav>
 
     <div class="promo-banner">🎓 <strong>Harvard ID Holders:</strong> Show ID at pickup for <strong>10% OFF</strong>!</div>
 
-    <main id="menu-container"><div style="text-align:center; padding:80px;">Analyzing Nutritional Balance...</div></main>
+    <main id="menu-container">
+        </main>
 
     <section id="group-order-summary" style="display:none;">
         <h3>📋 Finalize Your Order</h3>
-        
         <div class="info-group">
             <input type="text" id="cust-id" class="info-input" placeholder="Your Name / ID" required>
-            <input type="tel" id="cust-phone" class="info-input" placeholder="Phone Number (e.g. 617-xxx-xxxx)" required>
+            <input type="tel" id="cust-phone" class="info-input" placeholder="Phone (e.g. 617-xxx-xxxx)" required>
         </div>
-
         <pre id="summary-text"></pre>
-        
         <button id="submit-btn" onclick="window.submitOrder()" class="submit-btn">PLACE MY ORDER</button>
-        
         <div class="disclaimer">
             *Chef starts preparing upon order confirmation.<br>
-            *Standard price applies unless Harvard ID is verified at pickup.
+            *Pricing: Standard Total vs. Harvard Special.
         </div>
     </section>
 
