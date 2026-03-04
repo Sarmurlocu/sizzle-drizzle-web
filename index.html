@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sizzle & Drizzle | Precision Nutrition</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -16,44 +16,29 @@
     <nav class="navbar">
         <div class="nav-logo">Sizzle & Drizzle</div>
         <div class="nav-links">
-            <a href="#">Daily Menu</a>
-            <a href="#">The Science</a>
+            <a href="index.html">Daily Menu</a>
+            <a href="science.html">The Science</a>
         </div>
     </nav>
 
     <main class="container">
         <section class="menu-section">
-            <h1 class="page-title">Precision Nutrition</h1>
-            <p class="page-subtitle">Medical-grade ingredient analysis for optimal health.</p>
+            <h1>Precision Nutrition</h1>
+            <p>Medical-grade ingredient analysis for optimal health.</p>
             
             <div id="menu-container">
-                <p class="loading-text">Analyzing database... 🔬</p>
-            </div>
+                </div>
         </section>
 
         <aside class="cart-section">
             <div class="cart-card">
                 <h2>Your Order</h2>
-                
-                <div id="empty-cart-msg">
-                    <div class="empty-icon">🛒</div>
-                    <p>Your medical meal plan is empty.</p>
-                </div>
-
+                <div id="empty-cart-msg">🛒 Your plan is empty.</div>
                 <div id="order-form-content" style="display: none;">
-                    <div class="input-group">
-                        <label>IDENTIFICATION</label>
-                        <input type="text" id="cust-id" placeholder="Name / Harvard ID">
-                        <input type="tel" id="cust-phone" placeholder="Contact Phone">
-                    </div>
-
                     <div id="summary-container">
                         <pre id="summary-text"></pre>
                     </div>
-
-                    <button id="submit-btn" onclick="window.submitOrder()" class="place-order-btn">
-                        PLACE ORDER
-                    </button>
+                    <button class="place-order-btn" onclick="window.submitOrder()">PLACE ORDER</button>
                 </div>
             </div>
         </aside>
@@ -61,15 +46,9 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            <div class="footer-info">
-                <h3 class="footer-logo">Sizzle & Drizzle</h3>
-                <p class="footer-address">
-                    1220 Massachusetts Ave, Cambridge, MA 02138
-                </p>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Sizzle & Drizzle. Medical Integrity. Chef's Precision.</p>
-            </div>
+            <h3>Sizzle & Drizzle</h3>
+            <p>1220 Massachusetts Ave, Cambridge, MA 02138</p>
+            <p style="font-size: 0.8rem; opacity: 0.6;">&copy; 2026 Sizzle & Drizzle. All rights reserved.</p>
         </div>
     </footer>
 
