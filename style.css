@@ -1,4 +1,4 @@
-/* --- 1. 基礎變數 --- */
+/* --- 1. 基礎變數與重置 --- */
 :root {
     --harvard-red: #A51C30;
     --dark-slate: #333E48;
@@ -42,31 +42,33 @@ body {
     color: var(--harvard-red);
 }
 
-/* --- 3. 佈局核心 (優化：往左延伸並加寬) --- */
+/* --- 3. 佈局核心 (電腦版：完全解放左側空間) --- */
 .container {
     flex: 1;
-    display: grid;
-    /* 調整比例：左側菜單獲得更多權重 (1fr)，右側訂單固定寬度 */
-    grid-template-columns: 1fr 360px; 
-    gap: 40px;
-    /* 演算法優化：放寬 max-width 並稍微減少兩側 margin，讓標題往左靠 */
-    max-width: 1400px; 
+    display: block; /* 取消 Grid，讓菜單容器佔滿寬度 */
+    max-width: 1400px;
     margin: 40px auto;
-    padding: 0 30px; /* 增加內距，確保在大螢幕也不會貼邊 */
+    padding: 0 40px;
+    position: relative; /* 作為定位參考 */
 }
 
-/* --- 4. 菜單欄位 (優化：兩列顯示) --- */
+/* 菜單區域寬度控制，預留空間給右側浮動訂單 */
+.menu-section {
+    width: calc(100% - 380px); /* 扣除右側訂單卡片 + 間距 */
+}
+
+/* --- 4. 菜單網格 (自動雙列演算法) --- */
 .items-grid {
     display: grid;
-    /* 核心修改：將 min 門檻調低至 260px，確保在電腦版能輕易排成兩列 */
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    /* 魯棒性調整：只要空間夠，就會排成兩列 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
     margin-bottom: 40px;
 }
 
 .item-card {
     background: white;
-    padding: 20px;
+    padding: 22px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     transition: transform 0.2s;
@@ -76,30 +78,20 @@ body {
 
 .item-card:hover { transform: translateY(-5px); }
 
-.item-card h3 { 
-    margin-top: 0; 
-    font-size: 1.25rem; 
+/* --- 5. 浮動訂單卡片 (演算法：右移到旁邊) --- */
+.cart-section {
+    position: fixed; /* 核心修改：固定在視窗，不影響其他元素排版 */
+    top: 150px;
+    right: 5%; /* 距離右側 5%，讓它看起來像浮動在邊緣 */
+    width: 350px;
+    z-index: 100;
 }
 
-.nutrient-tag {
-    display: inline-block;
-    background: #eef2f7;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    margin: 0 5px 5px 0;
-    color: #5a67d8;
-    font-weight: 600;
-}
-
-/* --- 5. 購物車卡片 (保持 Sticky) --- */
 .cart-card {
     background: white;
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* 加深陰影，增強浮動感 */
 }
 
 #summary-text {
@@ -122,14 +114,13 @@ body {
     font-weight: bold;
     cursor: pointer;
     margin-top: 15px;
-    font-size: 1rem;
 }
 
-/* --- 6. 頁底 (地址已更新) --- */
+/* --- 6. 頁底 (地址更新) --- */
 .site-footer {
     background-color: var(--dark-slate);
     color: white;
-    padding: 40px 20px 20px;
+    padding: 50px 20px 30px;
     margin-top: 60px;
     border-top: 5px solid var(--harvard-red);
 }
@@ -140,30 +131,22 @@ body {
     text-align: center;
 }
 
-.footer-address { 
-    font-size: 0.95rem; 
-    color: #cbd5e0; 
-    margin-bottom: 20px; 
-}
-
-.footer-bottom { 
-    border-top: 1px solid #4a5568; 
-    padding-top: 15px; 
-    font-size: 0.75rem; 
-    color: #718096; 
-}
+.footer-address { font-size: 0.95rem; color: #cbd5e0; margin-bottom: 20px; }
 
 /* --- 7. 手機版防禦 (Boundary Check) --- */
-@media (max-width: 992px) {
-    .container { 
-        grid-template-columns: 1fr; 
-        margin-top: 20px;
+@media (max-width: 1100px) {
+    /* 當螢幕縮窄到放不下浮動卡片時，切換回標準流佈局 */
+    .container { padding: 0 20px; }
+    
+    .menu-section { width: 100%; }
+
+    .cart-section {
+        position: static; /* 回復到標準排版 */
+        width: 100%;
+        margin-top: 30px;
     }
+
     .items-grid {
-        grid-template-columns: 1fr; /* 手機版維持單列，保持操作清晰 */
-    }
-    .cart-card {
-        position: static; /* 手機版不需要固定在頂部 */
-        margin-top: 20px;
+        grid-template-columns: 1fr; /* 窄螢幕或手機切換回單列 */
     }
 }
