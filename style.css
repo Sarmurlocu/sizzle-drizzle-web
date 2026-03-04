@@ -2,7 +2,7 @@
 :root {
     --harvard-red: #A51C30;
     --dark-slate: #333E48;
-    --light-bg-alpha: rgba(248, 249, 250, 0.85); /* 半透明背景，確保文字可讀 */
+    --light-bg-alpha: rgba(248, 249, 250, 0.85); 
 }
 
 body {
@@ -13,14 +13,14 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    /* 引用 assets 資料夾內的新路徑 */
+    /* 引用 assets 資料夾內的底圖 */
     background-image: url('assets/bg-harvard.jpg'); 
-    background-attachment: fixed; /* 底圖固定，營造精緻質感 */
+    background-attachment: fixed;
     background-size: cover;
     background-position: center;
 }
 
-/* --- 2. 導航欄 (磨砂玻璃質感) --- */
+/* --- 2. 導航欄 (磨砂玻璃效果) --- */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -29,7 +29,9 @@ body {
     background: rgba(255, 255, 255, 0.9);
     border-bottom: 2px solid var(--harvard-red);
     backdrop-filter: blur(8px);
-    z-index: 1000;
+    position: sticky;
+    top: 0;
+    z-index: 1100;
 }
 
 .nav-logo {
@@ -39,74 +41,103 @@ body {
     color: var(--harvard-red);
 }
 
-/* --- 3. 佈局核心 (解決空間判定問題：極致靠左) --- */
+/* --- 3. 佈局核心 (解決空間判定：極致靠左) --- */
 .container {
     flex: 1;
     display: block;
-    margin: 40px 0 40px 5%; /* 左邊界對齊導航欄，右邊界完全開放 */
+    margin: 40px 0 40px 5%;
     max-width: none;
     padding: 0;
     position: relative;
 }
 
 .menu-section {
-    /* 預留 450px 給右側浮動訂單卡片，剩餘空間全給菜單 */
-    width: calc(100% - 450px); 
+    /* 預留 450px 給右側浮動訂單，剩餘全給菜單 */
+    width: calc(100% - 480px); 
     text-align: left;
-    background: rgba(255, 255, 255, 0.7); /* 輕微透出底圖 */
+    background: rgba(255, 255, 255, 0.75); 
     padding: 30px;
     border-radius: 20px;
     backdrop-filter: blur(5px);
 }
 
-/* --- 4. 菜單網格與營養標籤 (細節精緻化) --- */
+/* --- 4. 菜單網格與微縮標籤 (核心優化) --- */
 .items-grid {
     display: grid;
-    /* 強制演算法：門檻降至 260px，確保大螢幕必現兩列 */
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    /* 強制雙列演算法門檻 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
     margin-top: 30px;
 }
 
 .item-card {
     background: white;
-    padding: 22px;
+    padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
 }
 
 .item-card:hover { transform: translateY(-5px); }
 
-/* 核心優化：微縮營養標籤 (Micro Precision Tags) */
+/* 營養元件微縮標籤 (Precision Tags) */
 .nutrient-tag {
     display: inline-block;
     background: #edf2f7;
     color: #4a5568;
-    font-size: 0.6rem;    /* 極小化字體 */
-    padding: 1px 5px;    /* 縮減內距 */
-    margin: 0 2px 4px 0; /* 縮減間距防止換行擠壓 */
+    font-size: 0.6rem;    /* 極小化 */
+    padding: 1px 5px;
+    margin: 0 2px 4px 0;
     border-radius: 3px;
     font-weight: 700;
-    text-transform: uppercase; /* 大寫增加專業感 */
+    text-transform: uppercase;
     letter-spacing: 0.5px;
     border: 0.5px solid #cbd5e0;
 }
 
-/* --- 5. 側邊浮動訂單 (Fixed Strategy) --- */
+/* --- 5. 右側浮動訂單 (防溢出捲軸設計) --- */
 .cart-section {
     position: fixed;
-    top: 160px;
+    top: 140px;      /* 避開 Navbar */
     right: 40px;
-    width: 350px;
-    z-index: 100;
+    width: 360px;
+    z-index: 1000;
 }
 
 .cart-card {
     background: rgba(255, 255, 255, 0.98);
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    border: 1px solid rgba(165, 28, 48, 0.1);
+    
+    /* 魯棒性：高度限制與彈性佈局 */
+    max-height: 80vh; 
+    display: flex;
+    flex-direction: column;
+}
+
+#summary-text {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    border: 1px dashed #cbd5e0;
+    
+    /* 核心修改：內部捲軸區 */
+    max-height: 300px;    
+    overflow-y: auto;     
+    margin-bottom: 10px;
+    color: #2d3748;
+}
+
+/* 自定義紅色捲軸 */
+#summary-text::-webkit-scrollbar { width: 5px; }
+#summary-text::-webkit-scrollbar-thumb {
+    background: var(--harvard-red);
+    border-radius: 10px;
 }
 
 .place-order-btn {
@@ -118,22 +149,24 @@ body {
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 15px;
+    transition: opacity 0.2s;
 }
 
-/* --- 6. 頁底 (邊界防禦) --- */
+.place-order-btn:hover { opacity: 0.9; }
+
+/* --- 6. 頁底 --- */
 .site-footer {
     background-color: var(--dark-slate);
     color: white;
-    padding: 50px 5%;
+    padding: 40px 5%;
     margin-top: 60px;
     border-top: 5px solid var(--harvard-red);
 }
 
-/* --- 7. 手機與平板防禦 (Boundary Check) --- */
-@media (max-width: 1100px) {
+/* --- 7. 手機版防禦 (Boundary Check) --- */
+@media (max-width: 1150px) {
     .container { margin: 20px auto; padding: 0 20px; }
-    .menu-section { width: 100%; }
+    .menu-section { width: 100%; background: white; }
     .cart-section {
         position: static; 
         width: 100%;
