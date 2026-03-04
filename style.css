@@ -1,4 +1,4 @@
-/* --- 1. 基礎變數與背景 --- */
+/* --- 1. 基礎與背景 (保持不變) --- */
 :root {
     --harvard-red: #A51C30;
     --dark-slate: #333E48;
@@ -15,7 +15,7 @@ body {
     background-position: center;
 }
 
-/* --- 2. 導航欄 --- */
+/* --- 2. 導航與佈局 --- */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -29,49 +29,35 @@ body {
     z-index: 1100;
 }
 
-/* --- 3. 佈局核心 (修正內容消失問題) --- */
 .container {
-    display: flex; /* 改回彈性佈局以確保空間支撐 */
+    display: flex;
     justify-content: flex-start;
     margin: 40px 0 40px 5%;
     position: relative;
-    min-height: 80vh; /* 確保容器至少有足夠高度顯示內容 */
 }
 
 .menu-section {
-    width: calc(100% - 480px); /* 給右邊購物車留空間 */
+    width: calc(100% - 480px); 
     background: rgba(255, 255, 255, 0.8); 
     padding: 30px;
     border-radius: 20px;
     backdrop-filter: blur(5px);
-    box-sizing: border-box;
 }
 
-/* 核心優化：醒目的紅色章節標題 */
+/* 標題醒目化 */
 .menu-section h2 {
     color: var(--harvard-red);
     border-bottom: 2px solid var(--harvard-red);
     display: inline-block;
     padding-bottom: 5px;
     margin-top: 30px;
-    font-family: 'Playfair Display', serif;
 }
 
-/* --- 4. 菜單網格與微縮標籤 --- */
+/* --- 3. 菜單卡片與微縮標籤 --- */
 .items-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
-    margin-top: 20px;
-}
-
-.item-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-    display: block !important; /* 強制顯示 */
 }
 
 .nutrient-tag {
@@ -86,7 +72,7 @@ body {
     border: 0.5px solid #cbd5e0;
 }
 
-/* --- 5. 右側浮動購物車 (按鈕永遠在線) --- */
+/* --- 4. 購物車核心修復 (防橫移、找回 ID 欄位) --- */
 .cart-section {
     position: fixed;
     top: 120px;      
@@ -107,16 +93,45 @@ body {
     box-sizing: border-box;
 }
 
+/* ID 與電話輸入區：設定為固定不捲動 */
+.cart-inputs {
+    margin-bottom: 10px;
+    flex-shrink: 0; /* 確保不被壓縮 */
+}
+
+.cart-inputs input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #cbd5e0;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
 #summary-text {
     background: #f8f9fa;
     padding: 12px;
     border-radius: 8px;
     font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    
+    /* 修正垂直捲軸邏輯 */
     flex: 1;             
-    overflow-y: auto;    
-    margin: 10px 0;
+    overflow-y: auto;    /* 開啟垂直捲軸 */
+    overflow-x: hidden;  /* 徹底禁用橫向捲軸 */
+    white-space: pre-wrap; /* 允許文字自動換行，防止橫向溢出 */
+    word-break: break-all;
+    
+    margin: 5px 0 15px 0;
     border: 1px dashed #cbd5e0;
+    line-height: 1.4;
+}
+
+/* 自定義精緻垂直捲軸 */
+#summary-text::-webkit-scrollbar { width: 5px; }
+#summary-text::-webkit-scrollbar-thumb {
+    background: var(--harvard-red);
+    border-radius: 10px;
 }
 
 .place-order-btn {
@@ -131,9 +146,9 @@ body {
     flex-shrink: 0;
 }
 
-/* --- 6. 手機防禦 --- */
+/* --- 5. 手機防禦 --- */
 @media (max-width: 1150px) {
-    .container { flex-direction: column; margin: 20px auto; width: 90%; }
+    .container { flex-direction: column; }
     .menu-section { width: 100%; }
     .cart-section { position: static; width: 100%; height: auto; margin-top: 20px; }
 }
