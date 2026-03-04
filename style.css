@@ -1,0 +1,133 @@
+/* --- 1. 基礎變數與重置 (抽象化核心視覺) --- */
+:root {
+    --harvard-red: #A51C30;
+    --dark-slate: #333E48;
+    --light-bg: #f8f9fa;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark-slate);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 確保內容少時 footer 也在底部 */
+}
+
+/* --- 2. 導航與 Banner --- */
+.announcement-banner {
+    background-color: #FFF3CD;
+    color: #856404;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #ffeeba;
+    font-weight: 600;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background: white;
+    border-bottom: 2px solid var(--harvard-red);
+}
+
+.nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--harvard-red);
+}
+
+/* --- 3. 佈局核心 (Grid) --- */
+.container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+@media (max-width: 992px) {
+    .container { grid-template-columns: 1fr; }
+}
+
+/* --- 4. 菜單與卡片 --- */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.item-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.item-card:hover { transform: translateY(-5px); }
+
+.nutrient-tag {
+    display: inline-block;
+    background: #eef2f7;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-right: 5px;
+    color: #5a67d8;
+}
+
+/* --- 5. 購物車 --- */
+.cart-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+}
+
+#summary-text {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.place-order-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--harvard-red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- 6. 頁底 (Footer) --- */
+.site-footer {
+    background-color: var(--dark-slate);
+    color: white;
+    padding: 40px 20px 20px;
+    margin-top: 60px;
+    border-top: 5px solid var(--harvard-red);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-address { font-size: 0.9rem; color: #cbd5e0; margin-bottom: 20px; }
+.footer-bottom { border-top: 1px solid #4a5568; padding-top: 15px; font-size: 0.75rem; color: #718096; }
