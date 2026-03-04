@@ -14,7 +14,7 @@ function getEstimatedPickupTime() {
 }
 
 /**
- * 渲染邏輯：修正 ID 抓取路徑 (guest-id)
+ * 渲染邏輯：依據購物車狀態切換 UI
  */
 async function renderSummary() {
     const emptyMsg = document.getElementById('empty-cart-msg');
@@ -24,19 +24,19 @@ async function renderSummary() {
 
     if (cart.length === 0) {
         if (emptyMsg) emptyMsg.style.display = 'block';
-        if (formContent) formContent.style.display = 'none';
+        if (formContent) formContent.style.display = 'none'; // 隱藏表單
         return;
     }
 
-    // 魯棒性修正：確保切換為 flex 以配合 CSS 佈局
+    // 購物車有商品時，顯示表單並設為 flex 排版
     if (emptyMsg) emptyMsg.style.display = 'none';
     if (formContent) formContent.style.display = 'flex'; 
 
     const pickupTime = getEstimatedPickupTime();
     let subtotal = 0;
     
-    // 關鍵修正：對應 HTML 中的 guest-id
-    const customerID = document.getElementById('guest-id')?.value || 'Guest';
+    // 即時獲取輸入的名字，若空則顯示 Guest
+    const customerID = document.getElementById('guest-id')?.value.trim() || 'Guest';
     
     let itemsLines = `🛒 Order Detail for ${customerID}\n`;
     itemsLines += `============================\n`;
@@ -57,7 +57,8 @@ async function renderSummary() {
     itemsLines += `============================\n`;
     itemsLines += `Medical Integrity. Chef's Precision. 🔬`;
 
-    summaryText.innerText = itemsLines;
+    // 使用 textContent 替代 innerText，效能更好且更安全
+    summaryText.textContent = itemsLines;
 }
 
 window.handleAddToCart = (itemId, itemName, price, safeId) => {
@@ -79,10 +80,9 @@ window.handleAddToCart = (itemId, itemName, price, safeId) => {
 };
 
 /**
- * 下單邏輯：修正欄位抓取與按鈕狀態管理
+ * 下單邏輯
  */
 window.submitOrder = async () => {
-    // 關鍵修正：對應 HTML 中的 guest-id 與 guest-phone
     const guestId = document.getElementById('guest-id')?.value.trim();
     const guestPhone = document.getElementById('guest-phone')?.value.trim();
     
@@ -91,9 +91,9 @@ window.submitOrder = async () => {
         return;
     }
 
-    const btn = document.querySelector('.place-order-btn'); // 修正選擇器路徑
+    const btn = document.querySelector('.place-order-btn'); 
     btn.disabled = true;
-    btn.innerText = "PROCESSING...";
+    btn.textContent = "PROCESSING..."; // 改用 textContent
 
     try {
         const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
@@ -112,11 +112,21 @@ window.submitOrder = async () => {
         });
 
         alert("Order Received! Pickup estimated after " + pickupTime);
-        location.reload();
+        
+        // 成功後清空購物車與欄位 (取代重新整理頁面，體驗更佳)
+        cart = [];
+        document.getElementById('guest-id').value = '';
+        document.getElementById('guest-phone').value = '';
+        renderSummary();
+        
+        btn.disabled = false;
+        btn.textContent = "PLACE ORDER";
+
     } catch (e) {
+        console.error("Firebase Error:", e);
         alert("Error: " + e.message);
         btn.disabled = false;
-        btn.innerText = "PLACE ORDER";
+        btn.textContent = "PLACE ORDER";
     }
 };
 
@@ -127,4 +137,5 @@ document.addEventListener('input', (e) => {
     if (e.target.id === 'guest-id') renderSummary();
 });
 
+// 初始化畫面
 renderSummary();
