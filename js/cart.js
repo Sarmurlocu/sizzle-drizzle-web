@@ -3,9 +3,7 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 
 let cart = [];
 
-/**
- * 抽象化：獲取哈佛當地時間 (EST) 並增加 1 小時作為取餐緩衝
- */
+// 抽象化：時間演算法
 function getEstimatedPickupTime() {
     const now = new Date();
     const estTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
@@ -13,100 +11,97 @@ function getEstimatedPickupTime() {
     return estTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
-/**
- * 渲染摘要：嚴格控制 UI 顯示邏輯
- */
+// 渲染邏輯：嚴格顯示/隱藏控制
 function renderSummary() {
     const emptyMsg = document.getElementById('empty-cart-msg');
     const formContent = document.getElementById('order-form-content');
     const summaryText = document.getElementById('summary-text');
     
+    if (!emptyMsg || !formContent) return; // 魯棒性檢查
+
     if (cart.length === 0) {
-        if (emptyMsg) emptyMsg.style.display = 'block';
-        if (formContent) formContent.style.display = 'none';
+        emptyMsg.style.display = 'block';
+        formContent.style.display = 'none';
         return;
     }
 
-    if (emptyMsg) emptyMsg.style.display = 'none';
-    if (formContent) formContent.style.display = 'flex'; 
+    emptyMsg.style.display = 'none';
+    formContent.style.display = 'block'; 
 
-    const customerID = document.getElementById('guest-id')?.value.trim() || 'Guest';
+    const guestId = document.getElementById('guest-id')?.value.trim() || 'Guest';
     let subtotal = 0;
-    let lines = `🛒 Patient Order: ${customerID}\n`;
+    let lines = `🛒 Order for ${guestId}\n`;
     lines += `----------------------------\n`;
 
     cart.forEach(item => {
-        const linePrice = item.unitPrice * item.quantity;
-        subtotal += linePrice;
-        lines += `• ${item.name} x${item.quantity}: $${linePrice.toFixed(2)}\n`;
+        const itemTotal = item.unitPrice * item.quantity;
+        subtotal += itemTotal;
+        lines += `• ${item.name} x${item.quantity}: $${itemTotal.toFixed(2)}\n`;
     });
 
     lines += `----------------------------\n`;
-    lines += `ESTIMATED PICKUP: After ${getEstimatedPickupTime()}\n`;
+    lines += `ESTIMATED: After ${getEstimatedPickupTime()}\n`;
     lines += `Standard Total: $${subtotal.toFixed(2)}\n`;
     lines += `🎓 Harvard Discount: $${(subtotal * 0.9).toFixed(2)}\n`;
     lines += `----------------------------\n`;
-    lines += `Status: Verified Nutrition Integrity`;
+    lines += `Status: Medical-Grade Precision`;
 
-    summaryText.textContent = lines;
+    if (summaryText) summaryText.textContent = lines;
 }
 
-/**
- * 下單邏輯：Firebase 邊界防禦與清理
- */
+// 全域掛載：下單邏輯
 window.submitOrder = async () => {
-    const idVal = document.getElementById('guest-id')?.value.trim();
-    const phoneVal = document.getElementById('guest-phone')?.value.trim();
+    const idField = document.getElementById('guest-id');
+    const phoneField = document.getElementById('guest-phone');
     
-    if (!idVal || !phoneVal) {
-        alert("Input Error: Guest ID and Phone are required.");
+    if (!idField?.value.trim() || !phoneField?.value.trim()) {
+        alert("Boundary Error: ID and Phone are required.");
         return;
     }
 
     const btn = document.querySelector('.place-order-btn');
     btn.disabled = true;
-    btn.textContent = "TRANSMITTING...";
+    btn.textContent = "SENDING...";
 
     try {
         await addDoc(collection(db, "orders"), {
-            customer: { id: idVal, phone: phoneVal },
+            customer: { id: idField.value, phone: phoneField.value },
             items: cart,
             created_at: serverTimestamp(),
             status: "pending"
         });
-
-        alert("Success! Your nutrition plan is being prepared.");
-        cart = []; // 重置資料結構
-        document.getElementById('guest-id').value = '';
-        document.getElementById('guest-phone').value = '';
-        renderSummary(); // 回到空狀態
+        alert("Order Received! See you in 1 hour.");
+        cart = [];
+        idField.value = '';
+        phoneField.value = '';
+        renderSummary();
     } catch (e) {
-        console.error("Transmission Error:", e);
-        alert("System Error: Unable to sync with database.");
+        alert("Logic Failure: " + e.message);
     } finally {
         btn.disabled = false;
         btn.textContent = "PLACE ORDER";
     }
 };
 
-// 全域掛載加入購物車函數
-window.handleAddToCart = (itemId, itemName, price, safeId) => {
-    const targetId = safeId || itemId;
-    const qty = parseInt(document.getElementById(`qty-${targetId}`)?.value) || 0;
+// 全域掛載：加入購物車
+window.handleAddToCart = (id, name, price, safeId) => {
+    const qtyInput = document.getElementById(`qty-${safeId || id}`);
+    const qty = parseInt(qtyInput?.value) || 0;
     if (qty <= 0) return;
 
-    const existing = cart.find(i => i.id === itemId);
+    const existing = cart.find(i => i.id === id);
     if (existing) {
         existing.quantity += qty;
     } else {
-        cart.push({ id: itemId, name: itemName, unitPrice: parseFloat(price), quantity: qty });
+        cart.push({ id, name, unitPrice: parseFloat(price), quantity: qty });
     }
     renderSummary();
 };
 
-// 即時同步 ID 輸入
+// 監聽輸入即時更新摘要
 document.addEventListener('input', (e) => {
     if (e.target.id === 'guest-id') renderSummary();
 });
 
+// 初始化
 renderSummary();
