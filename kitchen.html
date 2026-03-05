@@ -109,41 +109,31 @@
             startListeningForOrders();
         });
 
-        function startListeningForOrders() {
-            // 【明確的範圍】：我們只抓取 status 為 "new" (未處理) 的訂單
-            const q = query(collection(db, "orders"), where("status", "==", "new"));
+function startListeningForOrders() {
+            // 【明確的範圍】：監聽所有「未取餐」的訂單 (包含新訂單與已備餐)
+            const q = query(collection(db, "orders"), where("status", "in", ["new", "prepared"]));
 
-            // onSnapshot 會在資料庫有任何變動時「自動」觸發
             onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('orders-container');
                 const emptyState = document.getElementById('empty-state');
                 
-                // 【周全的防禦】：判斷是不是有「新」訂單進來，有才發出聲音
                 if (snapshot.docs.length > currentOrderCount && currentOrderCount !== 0) {
                     playAlertSound();
                 }
                 currentOrderCount = snapshot.docs.length;
-
-                container.innerHTML = ''; // 清空現有畫面
+                container.innerHTML = '';
 
                 if (snapshot.empty) {
                     emptyState.style.display = 'block';
-                    emptyState.textContent = "All caught up! Waiting for new orders...";
                     return;
                 }
-
                 emptyState.style.display = 'none';
 
-                // 將所有訂單抓出來，並按照取餐時間排序
                 let orders = [];
-                snapshot.forEach((doc) => {
-                    orders.push({ id: doc.id, ...doc.data() });
-                });
+                snapshot.forEach((doc) => orders.push({ id: doc.id, ...doc.data() }));
                 orders.sort((a, b) => a.pickup_slot.localeCompare(b.pickup_slot));
 
-                // 渲染每筆訂單卡片
                 orders.forEach((order) => {
-                    // 格式化取餐時間 (例如 1330 轉成 1:30 PM)
                     let hour = parseInt(order.pickup_slot.substring(0,2));
                     const min = order.pickup_slot.substring(2,4);
                     const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -151,7 +141,13 @@
                     hour = hour ? hour : 12; 
                     const timeDisplay = `${hour}:${min} ${ampm}`;
 
-                    // 渲染菜色清單
+                    // 【嚴謹的邏輯】：根據狀態決定卡片顏色與按鈕內容
+                    const isPrepared = order.status === "prepared";
+                    const cardStyle = isPrepared ? "border-left: 8px solid #3498db; background-color: #34495e;" : "border-left: 8px solid #e74c3c;";
+                    const btnLabel = isPrepared ? "🛍️ 完成取餐 (Picked Up)" : "✔️ 完成備餐 (Prepared)";
+                    const btnClass = isPrepared ? "background-color: #3498db;" : "background-color: #27ae60;";
+                    const nextStatus = isPrepared ? "completed" : "prepared";
+
                     let itemsHTML = '';
                     order.items.forEach(item => {
                         itemsHTML += `<li><span>${item.name}</span> <span class="item-qty">x ${item.quantity}</span></li>`;
@@ -159,42 +155,36 @@
 
                     const card = document.createElement('div');
                     card.className = 'order-card';
+                    card.setAttribute('style', cardStyle); // 動態改變卡片顏色
                     card.innerHTML = `
                         <div>
                             <div class="order-header">
                                 <span class="pickup-time">${timeDisplay}</span>
                                 <div class="customer-info">
                                     <span class="customer-name">${order.customer}</span>
-                                    ${order.phone}
+                                    <span style="color: #f1c40f; font-weight: bold;">📞 ${order.phone}</span>
                                 </div>
                             </div>
                             <ul class="item-list">
                                 ${itemsHTML}
                             </ul>
                         </div>
-                        <button class="done-btn" onclick="markOrderDone('${order.id}')">✔️ Mark as Done</button>
+                        <button class="done-btn" style="${btnClass}" onclick="updateOrderStatus('${order.id}', '${nextStatus}')">
+                            ${btnLabel}
+                        </button>
                     `;
                     container.appendChild(card);
                 });
-            }, (error) => {
-                console.error("即時監聽發生錯誤: ", error);
-                alert("Connection lost. Please refresh the page.");
             });
         }
 
-        // 【嚴謹的邏輯】：將訂單狀態改為 completed
-        window.markOrderDone = async function(orderId) {
+        // 修改訂單狀態的通用函數
+        window.updateOrderStatus = async function(orderId, nextStatus) {
             try {
                 const orderRef = doc(db, "orders", orderId);
-                // 這裡只更新 status 欄位，不影響其他資料
-                await updateDoc(orderRef, {
-                    status: "completed"
-                });
-                // 注意：我們不需要寫代碼去「刪除畫面上的卡片」。
-                // 因為資料庫狀態一變，onSnapshot 會瞬間重新觸發，那張卡片會自動消失！
+                await updateDoc(orderRef, { status: nextStatus });
             } catch (error) {
                 console.error("Error updating order: ", error);
-                alert("Failed to update order status.");
             }
         };
     </script>
