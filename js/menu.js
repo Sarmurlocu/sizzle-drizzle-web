@@ -8,12 +8,13 @@ async function loadMenu() {
     console.log("System: Starting to fetch menu data...");
 
     try {
-        const querySnapshot = await getDocs(collection(db, "menu_items"));
+        // 【明確的範圍】：這裡已經將目標集合精確修改為 "menu"
+        const querySnapshot = await getDocs(collection(db, "menu"));
         
         // 邊界檢查：資料庫是否為空
         if (querySnapshot.empty) {
-            console.warn("System Warning: 資料庫集合 'menu_items' 是空的！");
-            container.innerHTML = '<p>⚠️ No precision items found in database. Please add items via Firebase Console.</p>';
+            console.warn("System Warning: 資料庫集合 'menu' 是空的！");
+            container.innerHTML = '<p>⚠️ No precision items found in database. Please add items to the "menu" collection.</p>';
             return;
         }
 
@@ -21,8 +22,9 @@ async function loadMenu() {
         querySnapshot.forEach((doc) => {
             items.push({ id: doc.id, ...doc.data() });
         });
-        console.log(`System: Successfully loaded ${items.length} items.`);
+        console.log(`System: Successfully loaded ${items.length} items from 'menu'.`);
 
+        // 嚴謹的邏輯：分類過濾
         const categories = {
             "01. Fresh Produce": items.filter(i => i.category === "Fresh Produce"),
             "02. Chef's Special Dishes": items.filter(i => i.category === "Chef's Special Dishes")
