@@ -1,15 +1,20 @@
+// js/firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// ⚠️ 請將這裡替換成你 Firebase 後台提供的真實設定值！
 const firebaseConfig = {
-  apiKey: "AIzaSyACsOsE467bbOGrHdkxjUhcdPL-i_F_rNM",
-  authDomain: "sizzle-drizzle-restaurant.firebaseapp.com",
-  projectId: "sizzle-drizzle-restaurant",
-  storageBucket: "sizzle-drizzle-restaurant.firebasestorage.app",
-  messagingSenderId: "713438474887",
-  appId: "1:713438474887:web:f4a1514105ad9beac7be22"
+  apiKey: "AIzaSyYourAPIKeyHere...",
+  authDomain: "your-project-id.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project-id.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abcdefg..."
 };
 
-// 嚴謹邏輯：初始化並確保 db 被正確導出
+// 初始化 Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app); // 關鍵點：必須有 export 字樣
+
+// 初始化並導出 Firestore 資料庫實例 (這行最重要，絕對不能漏)
+const db = getFirestore(app);
+export { db };
