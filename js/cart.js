@@ -3,7 +3,7 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 
 let cart = [];
 
-// 抽象化：時間演算法
+// 取餐時間演算法
 function getEstimatedPickupTime() {
     const now = new Date();
     const estTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
@@ -11,13 +11,13 @@ function getEstimatedPickupTime() {
     return estTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
-// 渲染邏輯：嚴格顯示/隱藏控制
+// 渲染摘要演算法
 function renderSummary() {
     const emptyMsg = document.getElementById('empty-cart-msg');
     const formContent = document.getElementById('order-form-content');
     const summaryText = document.getElementById('summary-text');
     
-    if (!emptyMsg || !formContent) return; // 魯棒性檢查
+    if (!emptyMsg || !formContent) return;
 
     if (cart.length === 0) {
         emptyMsg.style.display = 'block';
@@ -26,11 +26,12 @@ function renderSummary() {
     }
 
     emptyMsg.style.display = 'none';
-    formContent.style.display = 'block'; 
+    formContent.style.display = 'flex'; 
 
     const guestId = document.getElementById('guest-id')?.value.trim() || 'Guest';
     let subtotal = 0;
-    let lines = `🛒 Order for ${guestId}\n`;
+    
+    let lines = `🛒 Patient Order: ${guestId}\n`;
     lines += `----------------------------\n`;
 
     cart.forEach(item => {
@@ -40,7 +41,7 @@ function renderSummary() {
     });
 
     lines += `----------------------------\n`;
-    lines += `ESTIMATED: After ${getEstimatedPickupTime()}\n`;
+    lines += `ESTIMATED PICKUP: After ${getEstimatedPickupTime()}\n`;
     lines += `Standard Total: $${subtotal.toFixed(2)}\n`;
     lines += `🎓 Harvard Discount: $${(subtotal * 0.9).toFixed(2)}\n`;
     lines += `----------------------------\n`;
@@ -49,41 +50,7 @@ function renderSummary() {
     if (summaryText) summaryText.textContent = lines;
 }
 
-// 全域掛載：下單邏輯
-window.submitOrder = async () => {
-    const idField = document.getElementById('guest-id');
-    const phoneField = document.getElementById('guest-phone');
-    
-    if (!idField?.value.trim() || !phoneField?.value.trim()) {
-        alert("Boundary Error: ID and Phone are required.");
-        return;
-    }
-
-    const btn = document.querySelector('.place-order-btn');
-    btn.disabled = true;
-    btn.textContent = "SENDING...";
-
-    try {
-        await addDoc(collection(db, "orders"), {
-            customer: { id: idField.value, phone: phoneField.value },
-            items: cart,
-            created_at: serverTimestamp(),
-            status: "pending"
-        });
-        alert("Order Received! See you in 1 hour.");
-        cart = [];
-        idField.value = '';
-        phoneField.value = '';
-        renderSummary();
-    } catch (e) {
-        alert("Logic Failure: " + e.message);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "PLACE ORDER";
-    }
-};
-
-// 全域掛載：加入購物車
+// 暴露給 HTML 的加入購物車函數
 window.handleAddToCart = (id, name, price, safeId) => {
     const qtyInput = document.getElementById(`qty-${safeId || id}`);
     const qty = parseInt(qtyInput?.value) || 0;
@@ -98,7 +65,49 @@ window.handleAddToCart = (id, name, price, safeId) => {
     renderSummary();
 };
 
-// 監聽輸入即時更新摘要
+// 暴露給 HTML 的下單函數
+window.submitOrder = async () => {
+    const idField = document.getElementById('guest-id');
+    const phoneField = document.getElementById('guest-phone');
+    const idVal = idField?.value.trim();
+    const phoneVal = phoneField?.value.trim();
+    
+    // 邊界檢查
+    if (!idVal || !phoneVal) {
+        alert("Input Error: Guest ID and Phone are required.");
+        return;
+    }
+
+    const btn = document.querySelector('.place-order-btn');
+    btn.disabled = true;
+    btn.textContent = "TRANSMITTING...";
+
+    try {
+        const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+
+        await addDoc(collection(db, "orders"), {
+            customer: { id: idVal, phone: phoneVal },
+            items: cart,
+            billing: { standard_total: subtotal, final_total: subtotal * 0.9 },
+            created_at: serverTimestamp(),
+            status: "pending"
+        });
+
+        alert("Success! Your nutrition plan is being prepared.");
+        cart = [];
+        idField.value = '';
+        phoneField.value = '';
+        renderSummary();
+    } catch (e) {
+        console.error("Transmission Error:", e);
+        alert("System Error: Unable to sync with database.");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "PLACE ORDER";
+    }
+};
+
+// 監聽即時輸入
 document.addEventListener('input', (e) => {
     if (e.target.id === 'guest-id') renderSummary();
 });
