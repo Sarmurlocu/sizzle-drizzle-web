@@ -3,15 +3,32 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/f
 
 async function loadMenu() {
     const container = document.getElementById('menu-container');
-    container.innerHTML = '<p>Analyzing ingredients...</p>';
+    if (!container) {
+        console.error("Boundary Error: 找不到 #menu-container 容器");
+        return;
+    }
+
+    container.innerHTML = '<p>🔬 Analyzing medical-grade ingredients...</p>';
+    console.log("System: Starting to fetch menu data...");
 
     try {
+        // 1. 執行資料獲取
         const querySnapshot = await getDocs(collection(db, "menu_items"));
+        
+        // 邊界檢查：檢查資料庫是否回傳內容
+        if (querySnapshot.empty) {
+            console.warn("System Warning: 資料庫集合 'menu_items' 是空的！");
+            container.innerHTML = '<p>⚠️ No precision items found in database.</p>';
+            return;
+        }
+
         const items = [];
         querySnapshot.forEach((doc) => {
             items.push({ id: doc.id, ...doc.data() });
         });
+        console.log(`System: Successfully loaded ${items.length} items.`, items);
 
+        // 2. 邏輯分類
         const categories = {
             "01. Fresh Produce": items.filter(i => i.category === "Fresh Produce"),
             "02. Chef's Special Dishes": items.filter(i => i.category === "Chef's Special Dishes")
@@ -32,51 +49,47 @@ async function loadMenu() {
 
                 const safeId = item.id.replace(/\s+/g, '-');
 
-                // 【嚴謹的邏輯 (if)】：動態決定價格的顯示範圍與顏色
+                // 嚴謹的特價邏輯
                 let priceHtml = '';
-                if (item.originalPrice && item.originalPrice > item.price) {
-                    // 如果有原價且大於現價 -> 顯示紅色特價 + 灰色刪除線原價
+                const currentPrice = Number(item.price);
+                const originalPrice = Number(item.originalPrice);
+
+                if (originalPrice && originalPrice > currentPrice) {
                     priceHtml = `
-                        <span class="sale-price">$${item.price.toFixed(2)}</span>
-                        <span class="original-price">$${item.originalPrice.toFixed(2)}</span>
+                        <span class="sale-price" style="color: var(--harvard-red); font-weight: bold;">$${currentPrice.toFixed(2)}</span>
+                        <span class="original-price" style="color: #94a3b8; text-decoration: line-through; font-size: 0.85rem; margin-left: 5px;">$${originalPrice.toFixed(2)}</span>
                     `;
                 } else {
-                    // 一般商品 -> 顯示黑色正常價
-                    priceHtml = `<span class="regular-price">$${item.price.toFixed(2)}</span>`;
+                    priceHtml = `<span class="regular-price" style="color: #333; font-weight: bold;">$${currentPrice.toFixed(2)}</span>`;
                 }
 
                 html += `
                     <div class="item-card">
                         <h3>${item.name}</h3>
-                        
-                        <div class="nutrient-container">
-                            ${nutrientsHtml}
-                        </div>
-                        
+                        <div class="nutrient-container">${nutrientsHtml}</div>
                         <div class="price-row">
-                            <div class="price-display">
-                                ${priceHtml}
-                            </div>
-                            <span style="font-size: 0.8rem; color: #888; font-weight: normal;">Stock: ${item.stock}</span>
+                            <div class="price-display">${priceHtml}</div>
+                            <span style="font-size: 0.75rem; color: #999;">Stock: ${item.stock || 0}</span>
                         </div>
-
                         <div class="add-to-cart-controls">
-                            <input type="number" id="qty-${safeId}" value="1" min="1" max="${item.stock}">
-                            <button onclick="window.handleAddToCart('${item.id}', '${item.name}', ${item.price}, '${safeId}')">Add to Order</button>
+                            <input type="number" id="qty-${safeId}" value="1" min="1" max="${item.stock || 99}">
+                            <button onclick="window.handleAddToCart('${item.id}', '${item.name}', ${currentPrice}, '${safeId}')">Add to Order</button>
                         </div>
                     </div>
                 `;
             });
-
-            html += `</div>`; 
+            html += `</div>`;
         }
 
         container.innerHTML = html;
+        console.log("System: Menu rendering complete.");
 
     } catch (error) {
-        console.error("Error loading menu:", error);
-        container.innerHTML = `<p style="color:red;">Error loading precision menu. Please check database connection.</p>`;
+        // 防禦：捕獲所有可能的異步錯誤
+        console.error("Critical Error during loadMenu:", error);
+        container.innerHTML = `<p style="color:red;">❌ Error loading menu: ${error.message}</p>`;
     }
 }
 
+// 執行
 loadMenu();
