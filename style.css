@@ -1,57 +1,165 @@
 :root {
     --harvard-red: #A51C30;
+    --sand-bg: #fdfaf5;
+    --text-main: #333333;
+    --text-muted: #666666;
 }
 
 body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background-color: #fdfaf5;
+    color: var(--text-main);
+    /* 防禦：加上背景圖，並設定 fallback 顏色。請確認 assets/ 內有你的背景圖 */
+    background: url('assets/background.jpg') center/cover fixed var(--sand-bg); 
 }
 
-/* --- 導覽列：解決定位點問題 --- */
+/* --- 導覽列 --- */
+.announcement-banner {
+    background: #fff9db;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.9rem;
+    color: #856404;
+}
+
 .navbar {
     display: flex;
-    justify-content: space-between; /* 關鍵：左 Logo, 右 Links */
+    justify-content: space-between;
     align-items: center;
-    padding: 15px 5%; /* 使用百分比，確保在不同螢幕都有邊距 */
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 15px 5%;
+    background: rgba(255, 255, 255, 0.98); /* 半透明防禦 */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     position: sticky;
     top: 0;
     z-index: 1000;
-    width: 100%;
-    box-sizing: border-box; /* 防止 padding 撐破寬度 */
 }
 
 .nav-logo {
     font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
     color: var(--harvard-red);
 }
 
 .nav-links a {
     text-decoration: none;
-    color: #4a5568;
-    margin-left: 25px; /* 連結之間的間距 */
-    font-weight: 500;
+    color: var(--text-main);
+    margin-left: 25px;
+    font-weight: 600;
 }
 
-.nav-links a:hover {
-    color: var(--harvard-red);
-    text-decoration: underline;
-}
-
-/* --- 佈局邊界處理 --- */
+/* --- 主佈局與標題 --- */
 .container {
     max-width: 1200px;
     margin: 40px auto;
     display: grid;
     grid-template-columns: 1fr 380px;
-    gap: 30px;
+    gap: 40px;
     padding: 0 20px;
 }
 
+.page-title {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+/* --- 菜單雙欄網格 (明確的範圍) --- */
+.menu-section-title {
+    font-size: 1.5rem;
+    color: var(--harvard-red);
+    border-bottom: 2px solid var(--harvard-red);
+    padding-bottom: 8px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 核心邏輯：雙欄呈現 */
+    gap: 20px;
+}
+
+/* --- 卡片與營養素便簽 --- */
+.item-card {
+    background: rgba(255, 255, 255, 0.95); /* 防禦：讓卡片在花俏的底圖上依然易讀 */
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+}
+
+/* 營養素便簽容器與單個便簽 */
+.nutrient-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.nutrient-tag {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #e2e8f0;
+}
+
+.price-row {
+    margin-top: auto; /* 邏輯：把價格往下推到底部 */
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--harvard-red);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-to-cart-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.add-to-cart-controls input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.add-to-cart-controls button {
+    flex: 1;
+    padding: 8px;
+    background: white;
+    border: 1px solid var(--text-main);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.add-to-cart-controls button:hover {
+    background: #f8f9fa;
+}
+
+/* --- 購物車 --- */
 .cart-section {
     position: sticky;
     top: 100px;
@@ -59,39 +167,65 @@ body {
 }
 
 .cart-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     padding: 24px;
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
 
+.cart-header-fields input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
 #summary-text {
     background: #f8f9fa;
-    padding: 12px;
+    padding: 15px;
     border-radius: 6px;
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
     white-space: pre-wrap;
     border: 1px dashed #cbd5e0;
-    margin: 15px 0;
     max-height: 400px;
     overflow-y: auto;
 }
 
 .place-order-btn {
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     background: var(--harvard-red);
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    margin-top: 10px;
 }
 
-.announcement-banner {
-    background: #fff9db;
+/* --- 頁尾 --- */
+.site-footer {
     text-align: center;
-    padding: 8px;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    margin-top: 60px;
+    color: var(--text-muted);
     font-size: 0.9rem;
+    border-top: 1px solid #eaeaea;
+}
+
+/* --- 響應式防禦 (手機版變成單欄) --- */
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    .items-grid {
+        grid-template-columns: 1fr;
+    }
+    .cart-section {
+        position: static;
+    }
 }
