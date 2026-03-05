@@ -6,42 +6,63 @@
     <meta name="description" content="SIZZLE & DRIZZLE in Cambridge. Data-driven, healthy Chinese cuisine near Harvard. Order fresh produce and chef's specials online.">
     <title>SIZZLE & DRIZZLE | Order Online</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; color: #333; }
+        /* 基礎設定放寬，為了容納三欄佈局 */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; color: #333; }
         h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; letter-spacing: 1px; }
         p.address { text-align: center; color: #7f8c8d; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-top: 0; font-size: 0.9em; }
         
-        /* 菜單分類標題 SEO 優化樣式 */
-        .menu-category { margin-top: 25px; font-size: 1.3em; color: #e74c3c; font-weight: bold; border-bottom: 2px solid #e74c3c; padding-bottom: 5px; text-transform: uppercase; }
+        /* 響應式排版框架 (抽象化空間) */
+        .app-layout { display: flex; flex-direction: column; gap: 25px; margin-top: 20px; }
+        .menu-area { display: flex; flex-direction: column; gap: 25px; flex: 2; }
+        .category-column { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .order-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #e74c3c; flex: 1; }
+
+        /* 當螢幕夠寬 (電腦端) 時，啟動三欄佈局與右側浮動 */
+        @media (min-width: 900px) {
+            .app-layout { flex-direction: row; align-items: flex-start; }
+            .menu-area { flex-direction: row; }
+            .order-section { position: sticky; top: 20px; margin-top: 0; height: fit-content; }
+        }
+
+        .menu-category { font-size: 1.3em; color: #e74c3c; font-weight: bold; border-bottom: 2px solid #e74c3c; padding-bottom: 5px; text-transform: uppercase; margin: 0; }
         
-        /* 菜色卡片 */
-        .menu-item { background: white; padding: 15px; margin-top: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-info { display: flex; flex-direction: column; width: 70%; }
+        .menu-item { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px; }
+        .item-info { width: 100%; }
         .item-name { font-weight: bold; font-size: 1.15em; margin: 0 0 5px 0; color: #2c3e50; }
         
-        /* 營養素視覺化徽章 UI 優化 */
         .nutrient-badges { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.7em; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge.protein { background-color: #3498db; } /* 藍色代表蛋白質 */
-        .badge.fiber { background-color: #2ecc71; } /* 綠色代表纖維 */
-        .badge.starch { background-color: #f1c40f; color: #333; } /* 黃色代表澱粉/碳水 */
-        .badge.fats { background-color: #e67e22; } /* 橘色代表優質脂肪 */
+        .badge.protein { background-color: #3498db; } 
+        .badge.fiber { background-color: #2ecc71; } 
+        .badge.starch { background-color: #f1c40f; color: #333; } 
+        .badge.fats { background-color: #e67e22; } 
         
         .item-price { font-size: 0.95em; color: #34495e; margin-top: 8px; font-weight: 500; }
         .original-price { text-decoration: line-through; margin-right: 5px; color: #bdc3c7; font-weight: normal; }
         
-        .order-section { background: white; padding: 20px; border-radius: 8px; margin-top: 35px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #e74c3c; }
-        input, select, button { padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; font-size: 1em; }
+        /* 數量輸入與加入按鈕區域 */
+        .action-area { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 5px; border-top: 1px dashed #eee; padding-top: 10px; }
+        .qty-wrapper { display: flex; align-items: center; gap: 5px; }
+        .qty-input { width: 60px; padding: 8px; border-radius: 6px; border: 1px solid #ccc; text-align: center; }
+        
+        input, select, button { padding: 12px; border-radius: 6px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; font-size: 1em; }
         button { background-color: #e74c3c; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background-color: #c0392b; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-        .add-btn { width: auto; background-color: #27ae60; padding: 10px 15px; font-size: 0.9em; margin-top: 5px; }
+        .add-btn { background-color: #27ae60; padding: 8px 15px; font-size: 0.9em; width: auto; flex-grow: 1; }
         .add-btn:hover { background-color: #2ecc71; }
         .add-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
         
-        #cart-items { list-style-type: none; padding: 0; }
-        #cart-items li { border-bottom: 1px dashed #ccc; padding: 8px 0; display: flex; justify-content: space-between;}
-        .total-line { font-weight: bold; font-size: 1.2em; text-align: right; margin-top: 15px; color: #e74c3c; }
-        .loading { text-align: center; color: #7f8c8d; padding: 20px; }
+        #cart-items { list-style-type: none; padding: 0; margin-bottom: 0; }
+        #cart-items li { border-bottom: 1px dashed #ccc; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; }
+        .cart-item-details { display: flex; flex-direction: column; gap: 3px; }
+        .cart-item-name { font-weight: bold; color: #2c3e50; }
+        .cart-item-calc { font-size: 0.85em; color: #7f8c8d; }
+        .cart-item-right { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        
+        .total-line { font-weight: bold; font-size: 1.3em; text-align: right; margin-top: 15px; color: #e74c3c; border-top: 2px solid #e0e0e0; padding-top: 10px; }
+        .remove-btn { width: auto; padding: 4px 8px; font-size: 0.8em; background: #95a5a6; border-radius: 4px; margin: 0; }
+        .remove-btn:hover { background: #7f8c8d; }
     </style>
 </head>
 <body>
@@ -51,32 +72,41 @@
         <p class="address">1220 Massachusetts Ave, Cambridge</p>
     </header>
 
-    <main id="menu-container">
-        <div class="loading">Loading fresh menu from the kitchen...</div>
-    </main>
+    <div class="app-layout">
+        <div class="menu-area">
+            <div id="col-fresh" class="category-column">
+                <h2 class="menu-category">1. Fresh Produce</h2>
+                <div id="content-fresh"></div>
+            </div>
+            <div id="col-chef" class="category-column">
+                <h2 class="menu-category">2. Chef's Specials</h2>
+                <div id="content-chef"></div>
+            </div>
+        </div>
 
-    <section class="order-section">
-        <h2>Your Order</h2>
-        <ul id="cart-items">
-            <li style="color: #95a5a6; justify-content: center;">Your cart is empty</li>
-        </ul>
-        <div class="total-line">Total: $<span id="total-price">0.00</span></div>
+        <section class="order-section">
+            <h2 style="margin-top: 0; text-align: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; color: #2c3e50;">Your Order</h2>
+            <ul id="cart-items">
+                <li style="color: #95a5a6; justify-content: center; border: none;">Your cart is empty</li>
+            </ul>
+            <div class="total-line">Total: $<span id="total-price">0.00</span></div>
 
-        <h3 style="margin-top: 25px;">Pickup Details</h3>
-        <select id="pickup-time">
-            <option value="">Select Pickup Time...</option>
-        </select>
+            <h3 style="margin-top: 25px; font-size: 1.1em; color: #2c3e50;">Pickup Details</h3>
+            <select id="pickup-time" style="margin-bottom: 15px;">
+                <option value="">Select Pickup Time...</option>
+            </select>
 
-        <input type="text" id="customer-name" placeholder="Your Name (Required)">
-        <input type="text" id="customer-phone" placeholder="Phone Number (Required)">
-        <button id="submit-order">Submit Order</button>
-    </section>
+            <input type="text" id="customer-name" placeholder="Your Name (Required)">
+            <input type="text" id="customer-phone" placeholder="Phone Number (Required)">
+            <button id="submit-order" style="margin-top: 15px; padding: 15px; font-size: 1.1em;">Submit Order</button>
+        </section>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ⚠️ REPLACE THIS WITH YOUR FIREBASE CONFIG ⚠️
+        // ⚠️ REPLACE THIS WITH YOUR REAL FIREBASE CONFIG ⚠️
         const firebaseConfig = {
           apiKey: "AIzaSyACsOsE467bbOGrHdkxjUhcdPL-i_F_rNM",
           authDomain: "sizzle-drizzle-restaurant.firebaseapp.com",
@@ -89,6 +119,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // 購物車狀態，現在每個 item 裡面會包含 quantity
         window.cart = [];
         window.total = 0;
 
@@ -98,32 +129,25 @@
         }
 
         async function loadMenu() {
-            const container = document.getElementById('menu-container');
-            container.innerHTML = ''; 
-
-            // 【明確的範圍】：將資料庫路徑對應到你指定的兩個大類別
             const categories = [
-                { path: 'menu/01_fresh_produce/items', title: '1. Fresh Produce' },
-                { path: 'menu/02_chinese_dishes/items', title: "2. Chef's Specials" }
+                { path: 'menu/01_fresh_produce/items', containerId: 'content-fresh' },
+                { path: 'menu/02_chinese_dishes/items', containerId: 'content-chef' }
             ];
 
             for (const cat of categories) {
+                const container = document.getElementById(cat.containerId);
                 try {
                     const querySnapshot = await getDocs(collection(db, cat.path));
-                    
                     if (!querySnapshot.empty) {
-                        // SEO: 使用 <h2> 標籤讓爬蟲看懂架構
-                        const catTitle = document.createElement('h2');
-                        catTitle.className = 'menu-category';
-                        catTitle.textContent = cat.title;
-                        container.appendChild(catTitle);
-
                         querySnapshot.forEach((doc) => {
                             renderMenuItem(container, doc.data(), doc.id);
                         });
+                    } else {
+                        container.innerHTML = "<p style='color:#7f8c8d; font-size:0.9em;'>Menu coming soon...</p>";
                     }
                 } catch (error) {
                     console.error("Error loading menu: ", error);
+                    container.innerHTML = "<p style='color:#e74c3c; font-size:0.9em;'>Failed to load items.</p>";
                 }
             }
         }
@@ -137,7 +161,6 @@
                 priceHTML = `<span class="original-price">$${data.base_price.toFixed(2)}</span> <span style="color:#e74c3c; font-weight:bold;">$${finalPrice.toFixed(2)} (Harvard Special)</span>`;
             }
 
-            // 【嚴謹的邏輯】：將 Boolean 轉化為直觀的色彩 Badge
             let tagsHTML = '<div class="nutrient-badges">';
             if(data.nutrition_tags) {
                 if(data.nutrition_tags.Protein) tagsHTML += `<span class="badge protein">Protein</span>`;
@@ -148,11 +171,24 @@
             tagsHTML += '</div>';
 
             const isOutOfStock = data.stock <= 0;
-            const btnHTML = isOutOfStock 
-                ? `<button class="add-btn" disabled>Sold Out</button>`
-                : `<button class="add-btn" onclick="addToCart('${data.name}', ${finalPrice})">+ Add</button>`;
+            
+            // 【演算法與防禦】：數量輸入框與加入按鈕
+            // 替換單引號防止 JS 執行錯誤
+            const safeName = data.name.replace(/'/g, "\\'"); 
+            
+            let actionHTML = '';
+            if (isOutOfStock) {
+                actionHTML = `<button class="add-btn" disabled>Sold Out</button>`;
+            } else {
+                actionHTML = `
+                    <div class="qty-wrapper">
+                        <span style="font-size:0.9em; color:#7f8c8d;">Qty:</span>
+                        <input type="number" id="qty-${id}" class="qty-input" value="1" min="1" max="${data.stock}">
+                    </div>
+                    <button class="add-btn" onclick="addToCart('${id}', '${safeName}', ${finalPrice}, ${data.stock})">+ Add to Cart</button>
+                `;
+            }
 
-            // SEO: 使用 <article> 包裝單一菜色，標題用 <h3>
             const itemArticle = document.createElement('article');
             itemArticle.className = 'menu-item';
             itemArticle.innerHTML = `
@@ -161,14 +197,15 @@
                     ${tagsHTML}
                     <div class="item-price">${priceHTML}</div>
                 </div>
-                <div>${btnHTML}</div>
+                <div class="action-area">
+                    ${actionHTML}
+                </div>
             `;
             container.appendChild(itemArticle);
         }
 
         async function loadPickupSlots() {
             const select = document.getElementById('pickup-time');
-            
             const nowET = new Date(new Date().toLocaleString("en-US", {timeZone: "America/New_York"}));
             const currentHour = nowET.getHours();
             const currentMinute = nowET.getMinutes();
@@ -187,33 +224,67 @@
                     if (isAvailable && isFuture) {
                         const option = document.createElement('option');
                         option.value = slot.id; 
-                        
                         let hour = parseInt(slot.id.substring(0,2));
                         const min = slot.id.substring(2,4);
                         const ampm = hour >= 12 ? 'PM' : 'AM';
                         hour = hour % 12;
                         hour = hour ? hour : 12; 
-                        const timeDisplay = `${hour}:${min} ${ampm}`;
-
-                        option.textContent = `${timeDisplay} (${slot.max_capacity - slot.current_booked} slots left)`;
+                        option.textContent = `${hour}:${min} ${ampm} (${slot.max_capacity - slot.current_booked} slots left)`;
                         select.appendChild(option);
                     }
                 });
 
-                if (select.options.length === 1) {
-                    select.options[0].textContent = "No available slots right now";
-                }
-
-            } catch (error) {
-                console.error("Error loading time slots: ", error);
-            }
+                if (select.options.length === 1) { select.options[0].textContent = "No available slots right now"; }
+            } catch (error) { console.error("Error loading time slots: ", error); }
         }
 
-        window.addToCart = function(itemName, price) {
-            window.cart.push({ name: itemName, price: price });
-            window.total += price;
+        // --- 核心邏輯升級：購物車聚合 ---
+        window.addToCart = function(id, itemName, price, maxStock) {
+            const qtyInput = document.getElementById(`qty-${id}`);
+            const qtyToAdd = parseInt(qtyInput.value);
+
+            // 【邊界防禦】：阻擋無效數字
+            if (isNaN(qtyToAdd) || qtyToAdd <= 0) {
+                alert("Please enter a valid quantity.");
+                qtyInput.value = 1; // 重置為1
+                return;
+            }
+
+            // 【嚴謹的邏輯】：尋找購物車內是否已有相同商品
+            const existingItem = window.cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                // 【邊界防禦】：確保加上現有數量後不會超過 Firebase 上的實體庫存
+                if (existingItem.quantity + qtyToAdd > maxStock) {
+                    alert(`Sorry, we only have ${maxStock} portions of ${itemName} left.`);
+                    return;
+                }
+                existingItem.quantity += qtyToAdd;
+            } else {
+                // 如果購物車沒有，且加入數量大於庫存
+                if (qtyToAdd > maxStock) {
+                    alert(`Sorry, we only have ${maxStock} portions of ${itemName} left.`);
+                    return;
+                }
+                // 建立新的商品紀錄，包含數量
+                window.cart.push({ id: id, name: itemName, price: price, quantity: qtyToAdd });
+            }
+
+            // 更新總價與畫面
+            window.total += (price * qtyToAdd);
             updateCartUI();
+            
+            // 成功加入後，將輸入框重置回 1，方便下次操作
+            qtyInput.value = 1; 
         };
+
+        window.removeFromCart = function(index) {
+            const item = window.cart[index];
+            // 扣除該品項的總額 (單價 * 數量)
+            window.total -= (item.price * item.quantity);
+            window.cart.splice(index, 1);
+            updateCartUI();
+        }
 
         function updateCartUI() {
             const cartList = document.getElementById('cart-items');
@@ -221,26 +292,25 @@
             cartList.innerHTML = ''; 
             
             if (window.cart.length === 0) {
-                cartList.innerHTML = '<li style="color: #95a5a6; justify-content: center;">Your cart is empty</li>';
+                cartList.innerHTML = '<li style="color: #95a5a6; justify-content: center; border: none;">Your cart is empty</li>';
             } else {
                 window.cart.forEach((item, index) => {
                     const li = document.createElement('li');
-                    // 加上移除按鈕，提升購物車 UX
+                    const itemTotalPrice = (item.price * item.quantity).toFixed(2);
                     li.innerHTML = `
-                        <span>${item.name}</span> 
-                        <span>$${item.price.toFixed(2)} <button style="width:auto; padding: 2px 6px; margin-left:10px; font-size:0.8em; background:#95a5a6;" onclick="removeFromCart(${index}, ${item.price})">X</button></span>
+                        <div class="cart-item-details">
+                            <span class="cart-item-name">${item.name}</span>
+                            <span class="cart-item-calc">$${item.price.toFixed(2)} x ${item.quantity}</span>
+                        </div>
+                        <div class="cart-item-right">
+                            <span>$${itemTotalPrice}</span>
+                            <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
+                        </div>
                     `;
                     cartList.appendChild(li);
                 });
             }
             totalSpan.textContent = window.total.toFixed(2);
-        }
-
-        // 新增：讓客人可以從購物車刪除不小心點錯的餐點 (防禦性 UX)
-        window.removeFromCart = function(index, price) {
-            window.cart.splice(index, 1);
-            window.total -= price;
-            updateCartUI();
         }
 
         document.getElementById('submit-order').addEventListener('click', async () => {
@@ -261,7 +331,7 @@
                     customer: nameInput,
                     phone: phoneInput,
                     pickup_slot: pickupTime,
-                    items: window.cart,
+                    items: window.cart, // 這裡已經自動包含了每個品項的 quantity
                     totalAmount: window.total,
                     status: "new",
                     createdAt: serverTimestamp() 
