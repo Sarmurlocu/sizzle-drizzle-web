@@ -9,11 +9,9 @@ body {
     margin: 0;
     font-family: 'Inter', sans-serif;
     color: var(--text-main);
-    /* 邊界防禦：即使圖片 404，也有 var(--sand-bg) 作為底色 */
     background: var(--sand-bg) url('assets/background.jpg') center/cover fixed; 
 }
 
-/* --- 導覽列 --- */
 .announcement-banner {
     background: #fff9db;
     text-align: center;
@@ -48,7 +46,6 @@ body {
     font-weight: 600;
 }
 
-/* --- 主佈局與標題 --- */
 .container {
     max-width: 1200px;
     margin: 40px auto;
@@ -69,7 +66,6 @@ body {
     margin-bottom: 30px;
 }
 
-/* --- 菜單雙欄網格 --- */
 .menu-section-title {
     font-size: 1.5rem;
     color: var(--harvard-red);
@@ -81,11 +77,10 @@ body {
 
 .items-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 明確範圍：雙欄 */
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
-/* --- 卡片與營養素便簽 --- */
 .item-card {
     background: rgba(255, 255, 255, 0.95);
     padding: 24px;
@@ -119,7 +114,6 @@ body {
     border: 1px solid #e2e8f0;
 }
 
-/* --- 價格區域 --- */
 .price-row {
     margin-top: auto; 
     display: flex;
@@ -133,7 +127,6 @@ body {
     gap: 8px;
 }
 
-/* --- 加入購物車按鈕 --- */
 .add-to-cart-controls {
     display: flex;
     gap: 8px;
@@ -163,7 +156,6 @@ body {
     background: #f8f9fa;
 }
 
-/* --- 購物車 --- */
 .cart-section {
     position: sticky;
     top: 100px;
@@ -210,7 +202,6 @@ body {
     margin-top: 10px;
 }
 
-/* --- 頁尾 --- */
 .site-footer {
     text-align: center;
     padding: 40px 20px;
@@ -221,7 +212,6 @@ body {
     border-top: 1px solid #eaeaea;
 }
 
-/* --- 手機版防禦 --- */
 @media (max-width: 900px) {
     .container { grid-template-columns: 1fr; }
     .items-grid { grid-template-columns: 1fr; }
