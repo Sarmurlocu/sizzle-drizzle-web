@@ -5,16 +5,15 @@ async function loadMenu() {
     const container = document.getElementById('menu-container');
     if (!container) return;
 
-    console.log("System: Starting to fetch menu data...");
+    console.log("System: Starting to fetch menu data from 'menu' collection...");
 
     try {
-        // 【明確的範圍】：這裡已經將目標集合精確修改為 "menu"
+        // 1. 抓取資料
         const querySnapshot = await getDocs(collection(db, "menu"));
         
-        // 邊界檢查：資料庫是否為空
         if (querySnapshot.empty) {
             console.warn("System Warning: 資料庫集合 'menu' 是空的！");
-            container.innerHTML = '<p>⚠️ No precision items found in database. Please add items to the "menu" collection.</p>';
+            container.innerHTML = '<p>⚠️ No items found in the database. Please add items to the "menu" collection.</p>';
             return;
         }
 
@@ -22,49 +21,51 @@ async function loadMenu() {
         querySnapshot.forEach((doc) => {
             items.push({ id: doc.id, ...doc.data() });
         });
-        console.log(`System: Successfully loaded ${items.length} items from 'menu'.`);
+        console.log(`System: Successfully loaded ${items.length} items.`, items);
 
-        // 嚴謹的邏輯：分類過濾
-        const categories = {
-            "01. Fresh Produce": items.filter(i => i.category === "Fresh Produce"),
-            "02. Chef's Special Dishes": items.filter(i => i.category === "Chef's Special Dishes")
-        };
+        // 2. 【魯棒性升級：動態分組演算法】
+        // 自動讀取 Firebase 的 category 欄位進行分組，容忍所有拼字或大小寫錯誤
+        const categories = {};
+        items.forEach(item => {
+            const cat = item.category || "Uncategorized"; // 防禦：如果沒填分類
+            if (!categories[cat]) {
+                categories[cat] = [];
+            }
+            categories[cat].push(item);
+        });
 
         let html = '';
 
+        // 3. 渲染畫面
         for (const [categoryName, catItems] of Object.entries(categories)) {
-            if (catItems.length === 0) continue;
-
             html += `<h2 class="menu-section-title">${categoryName}</h2>`;
             html += `<div class="items-grid">`;
 
             catItems.forEach(item => {
-                // 將營養素陣列轉換為標籤
-                const nutrientsHtml = (item.nutrients || [])
+                // 防禦：如果 nutrients 不是陣列，給予空陣列避免報錯
+                const nutrientsHtml = (Array.isArray(item.nutrients) ? item.nutrients : [])
                     .map(n => `<span class="nutrient-tag">${n}</span>`)
                     .join('');
 
                 const safeId = item.id.replace(/\s+/g, '-');
 
-                // 嚴謹邏輯 (If)：價格顯示判斷
+                // 價格邏輯
                 let priceHtml = '';
-                const currentPrice = Number(item.price);
-                const originalPrice = Number(item.originalPrice);
+                const currentPrice = Number(item.price) || 0;
+                const originalPrice = Number(item.originalPrice) || 0;
 
-                if (originalPrice && originalPrice > currentPrice) {
-                    // 有原價且大於現價 -> 顯示紅色現價 + 刪除線原價
+                if (originalPrice > currentPrice && currentPrice > 0) {
                     priceHtml = `
                         <span style="color: var(--harvard-red); font-weight: bold; font-size: 1.2rem;">$${currentPrice.toFixed(2)}</span>
-                        <span style="color: #94a3b8; text-decoration: line-through; font-size: 0.9rem;">$${originalPrice.toFixed(2)}</span>
+                        <span style="color: #94a3b8; text-decoration: line-through; font-size: 0.9rem; margin-left: 5px;">$${originalPrice.toFixed(2)}</span>
                     `;
                 } else {
-                    // 一般商品 -> 黑色現價
                     priceHtml = `<span style="color: var(--text-main); font-weight: bold; font-size: 1.2rem;">$${currentPrice.toFixed(2)}</span>`;
                 }
 
                 html += `
                     <div class="item-card">
-                        <h3>${item.name}</h3>
+                        <h3>${item.name || 'Unnamed Item'}</h3>
                         <div class="nutrient-container">${nutrientsHtml}</div>
                         <div class="price-row">
                             <div class="price-display">${priceHtml}</div>
@@ -72,7 +73,7 @@ async function loadMenu() {
                         </div>
                         <div class="add-to-cart-controls">
                             <input type="number" id="qty-${safeId}" value="1" min="1" max="${item.stock || 99}">
-                            <button onclick="window.handleAddToCart('${item.id}', '${item.name}', ${currentPrice}, '${safeId}')">Add to Order</button>
+                            <button onclick="window.handleAddToCart('${item.id}', '${item.name || 'Item'}', ${currentPrice}, '${safeId}')">Add to Order</button>
                         </div>
                     </div>
                 `;
@@ -86,9 +87,9 @@ async function loadMenu() {
 
     } catch (error) {
         console.error("Critical Error during loadMenu:", error);
-        container.innerHTML = `<p style="color:red;">❌ Error loading menu: ${error.message}</p>`;
+        container.innerHTML = `<p style="color:red;">❌ Error loading menu: ${error.message}<br>請檢查 Firebase 安全規則是否允許讀取 (allow read: if true;)</p>`;
     }
 }
 
-// 執行載入
+// 執行
 loadMenu();
