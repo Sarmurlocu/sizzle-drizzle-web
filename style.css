@@ -5,26 +5,27 @@
 body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background-color: #fcfaf7;
-    color: #333;
+    background-color: #fdfaf5;
 }
 
-/* --- 導覽列優化：解決定位點問題 --- */
+/* --- 導覽列：解決定位點問題 --- */
 .navbar {
     display: flex;
-    justify-content: space-between; /* 關鍵：強制將 Logo 往左推，連結往右推 */
+    justify-content: space-between; /* 關鍵：左 Logo, 右 Links */
     align-items: center;
-    padding: 15px 50px;
+    padding: 15px 5%; /* 使用百分比，確保在不同螢幕都有邊距 */
     background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     position: sticky;
     top: 0;
     z-index: 1000;
+    width: 100%;
+    box-sizing: border-box; /* 防止 padding 撐破寬度 */
 }
 
 .nav-logo {
     font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: var(--harvard-red);
 }
@@ -32,78 +33,65 @@ body {
 .nav-links a {
     text-decoration: none;
     color: #4a5568;
-    margin-left: 30px; /* 連結間距 */
+    margin-left: 25px; /* 連結之間的間距 */
     font-weight: 500;
-    transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
     color: var(--harvard-red);
+    text-decoration: underline;
 }
 
-/* --- 購物車排版優化 --- */
+/* --- 佈局邊界處理 --- */
 .container {
     max-width: 1200px;
     margin: 40px auto;
     display: grid;
     grid-template-columns: 1fr 380px;
-    gap: 40px;
+    gap: 30px;
     padding: 0 20px;
 }
 
 .cart-section {
     position: sticky;
     top: 100px;
-    height: calc(100vh - 140px); /* 保持在視窗內，不遮擋頁首 */
+    height: fit-content;
 }
 
 .cart-card {
     background: white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-#order-form-content {
-    display: none; 
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
 
 #summary-text {
     background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 12px;
+    border-radius: 6px;
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
-    flex: 1;
-    overflow-y: auto; /* 內容過長時自動產生捲軸 */
-    border: 1px dashed #cbd5e0;
     white-space: pre-wrap;
-    margin: 10px 0;
+    border: 1px dashed #cbd5e0;
+    margin: 15px 0;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .place-order-btn {
     width: 100%;
-    padding: 18px;
+    padding: 15px;
     background: var(--harvard-red);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
-    flex-shrink: 0; /* 防止按鈕被擠壓 */
 }
 
 .announcement-banner {
     background: #fff9db;
     text-align: center;
     padding: 8px;
-    font-size: 0.85rem;
-    border-bottom: 1px solid #f9eba0;
+    font-size: 0.9rem;
 }
