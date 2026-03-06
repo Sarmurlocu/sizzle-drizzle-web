@@ -170,27 +170,58 @@
             await loadPickupSlots();
         }
 
-        async function loadMenu() {
-            const categories = [
-                { path: 'menu/01_fresh_produce/items', containerId: 'content-fresh' },
-                { path: 'menu/02_chinese_dishes/items', containerId: 'content-chef' }
-            ];
-            for (const cat of categories) {
-                const container = document.getElementById(cat.containerId);
-                try {
-                    const querySnapshot = await getDocs(collection(db, cat.path));
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach((doc) => {
-                            // 將品項所屬的 Collection Path 也存入，以便後續更新庫存
-                            const itemData = doc.data();
-                            itemData.collectionPath = cat.path;
-                            renderMenuItem(container, itemData, doc.id);
-                        });
-                    } else {
-                        container.innerHTML = "<p>Coming soon...</p>";
+async function loadPickupSlots() {
+            const select = document.getElementById('pickup-time');
+            const submitBtn = document.getElementById('submit-order');
+            const nowET = new Date(new Date().toLocaleString("en-US", {timeZone: "America/New_York"}));
+            const currentTimeStr = (nowET.getHours() < 10 ? '0' : '') + nowET.getHours() + (nowET.getMinutes() < 10 ? '0' : '') + nowET.getMinutes();
+            
+            select.innerHTML = '<option value="">Select Pickup Time...</option>'; // 清空重置
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "pickup_slots"));
+                const slots = [];
+                querySnapshot.forEach((doc) => slots.push({ id: doc.id, ...doc.data() }));
+                slots.sort((a, b) => a.id.localeCompare(b.id)); 
+
+                let validSlotsFound = false;
+
+                slots.forEach((slot) => {
+                    const isFuture = slot.id > currentTimeStr;
+                    const isAvailable = slot.is_active && slot.current_booked < slot.max_capacity;
+
+                    if (isFuture) {
+                        const option = document.createElement('option');
+                        option.value = slot.id;
+                        let hour = parseInt(slot.id.substring(0,2));
+                        const ampm = hour >= 12 ? 'PM' : 'AM';
+                        hour = hour % 12 || 12;
+                        
+                        if (isAvailable) {
+                            option.textContent = `${hour}:${slot.id.substring(2,4)} ${ampm} (${slot.max_capacity - slot.current_booked} items left)`;
+                            validSlotsFound = true;
+                        } else {
+                            option.textContent = `${hour}:${slot.id.substring(2,4)} ${ampm} (FULL - Contact Staff)`;
+                            option.disabled = true; // 讓它看得到但不能選
+                        }
+                        select.appendChild(option);
                     }
-                } catch (error) { console.error(error); }
-            }
+                });
+
+                // 【邏輯優化】：如果沒有任何可用時段，執行邊界防禦
+                if (!validSlotsFound) {
+                    const option = document.createElement('option');
+                    option.textContent = "⚠️ ALL SLOTS FULL / CLOSED";
+                    option.value = "CLOSED"; // 給予一個特殊標記值
+                    select.appendChild(option);
+                    select.value = "CLOSED";
+                    
+                    // 直接停用下單按鈕，並更改文字作為營銷引導
+                    submitBtn.disabled = true;
+                    submitBtn.style.backgroundColor = "#95a5a6";
+                    submitBtn.textContent = "Orders Closed - Call 617-xxx-xxxx"; 
+                }
+            } catch (error) { console.error(error); }
         }
 
         function renderMenuItem(container, data, id) {
