@@ -169,6 +169,30 @@
             await loadMenu();
             await loadPickupSlots();
         }
+		async function loadMenu() {
+            const categories = [
+                { path: 'menu/01_fresh_produce/items', containerId: 'content-fresh' },
+                { path: 'menu/02_chinese_dishes/items', containerId: 'content-chef' }
+            ];
+            for (const cat of categories) {
+                const container = document.getElementById(cat.containerId);
+                try {
+                    const querySnapshot = await getDocs(collection(db, cat.path));
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach((doc) => {
+                            // 獲取數據並注入集合路徑，以便後續 Transaction 準確定位
+                            const itemData = doc.data();
+                            itemData.collectionPath = cat.path; 
+                            renderMenuItem(container, itemData, doc.id);
+                        });
+                    } else {
+                        container.innerHTML = "<p style='color:#7f8c8d; font-size:0.9em;'>Menu coming soon...</p>";
+                    }
+                } catch (error) {
+                    console.error("Error loading menu: ", error);
+                }
+            }
+        }
 
 async function loadPickupSlots() {
             const select = document.getElementById('pickup-time');
