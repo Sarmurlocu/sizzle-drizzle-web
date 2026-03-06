@@ -27,7 +27,7 @@
     </script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; color: #333; padding-bottom: 80px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; color: #333; padding-bottom: 80px; scroll-behavior: smooth; /* 全域平滑捲動 */ }
         h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; letter-spacing: 1px; font-weight: 800; }
         p.address { text-align: center; color: #7f8c8d; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-top: 0; font-size: 0.9em; }
         .app-layout { display: flex; flex-direction: column; gap: 25px; margin-top: 20px; }
@@ -37,7 +37,7 @@
         @media (min-width: 900px) {
             .app-layout { flex-direction: row; align-items: flex-start; }
             .menu-area { flex-direction: row; }
-            .order-section { position: sticky; top: 20px; margin-top: 0; height: fit-content; }
+            .order-section { position: sticky; top: 70px; /* 考慮到 Nav 的高度 */ margin-top: 0; height: fit-content; }
             body { padding-bottom: 20px; }
         }
         .menu-category { font-size: 1.3em; color: #e74c3c; font-weight: bold; border-bottom: 2px solid #e74c3c; padding-bottom: 5px; text-transform: uppercase; margin: 0; }
@@ -60,12 +60,19 @@
         #cart-items { list-style-type: none; padding: 0; margin-bottom: 0; font-size: 0.95em; }
         .total-line { font-weight: bold; font-size: 1.3em; text-align: right; margin-top: 15px; color: #e74c3c; border-top: 2px solid #e0e0e0; padding-top: 10px; }
         #mobile-checkout-btn { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; background-color: #2c3e50; color: white; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-size: 1.1em; border-radius: 50px; padding: 15px; }
+        
+        /* 新增：導覽列連結樣式 */
+        .nav-link { text-decoration: none; color: white; font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .nav-link:hover { color: #f1c40f; /* 懸停時變黃色 */ }
+        .nav-link.active { color: #e74c3c; /* 當前區域變紅色 */ border-bottom: 2px solid #e74c3c; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <header style="text-align: center; margin-bottom: 30px; padding: 60px 20px; background-image: linear-gradient(rgba(244, 247, 246, 0.85), rgba(244, 247, 246, 0.95)), url('poster.jpg'); background-size: cover; background-position: center; border-radius: 0 0 15px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-        <img src="logo.png" alt="Logo" style="max-width: 150px; margin-bottom: 15px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        
+        <img src="logo.png" alt="Logo" style="width: 130px; height: 130px; object-fit: cover; margin-bottom: 15px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 3px solid white;">
+        
         <h1>Healthy Taiwanese Cuisine in Cambridge.</h1>
         <p style="color: #34495e; font-size: 1.1em; max-width: 650px; margin: 0 auto 20px auto; line-height: 1.6; font-weight: 500;">
             Sizzle in the wok, drizzle of healthy fats. Real food, transparent macros, and uncompromising taste from a Harvard Medical PhD chef.
@@ -76,11 +83,10 @@
         </button>
     </header>
 
-    <nav style="position: sticky; top: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; gap: 30px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); font-family: 'Segoe UI', sans-serif;">
-        <a href="#story" style="text-decoration: none; color: #2c3e50; font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Our Story</a>
-        <a href="#science" style="text-decoration: none; color: #2c3e50; font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Science</a>
-        <a href="#menu-start" style="text-decoration: none; color: #e74c3c; font-weight: 700; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Menu</a>
-    </nav>
+    <nav style="position: sticky; top: 0; background: #2c3e50; z-index: 1000; display: flex; justify-content: center; gap: 30px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <a href="#story" class="nav-link">Our Story</a>
+        <a href="#science" class="nav-link">Science</a>
+        <a href="#menu-start" class="nav-link" style="color: #f1c40f; font-weight: 800;">Menu</a> </nav>
 
     <section id="story" style="padding: 80px 20px; text-align: center; background: white; margin: 20px 0; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
         <h2 style="color: #2c3e50; font-size: 2em; margin-bottom: 25px;">From Harvard Lab to Your Table</h2>
@@ -180,6 +186,7 @@
         async function initApp() {
             await loadMenu();
             await loadPickupSlots();
+            setupNavHighlight(); // 新增：啟動導覽列高亮
         }
 
         async function loadMenu() {
@@ -314,7 +321,7 @@
             const name = document.getElementById('customer-name').value.trim();
             const phone = document.getElementById('customer-phone').value.trim().replace(/\D/g, '');
             const pickup = document.getElementById('pickup-time').value;
-            if (window.cart.length === 0 || !pickup || !name || phone.length < 10) { alert("Check fields!"); return; }
+            if (window.cart.length === 0 || !pickup || !name || phone.length < 10) { alert("Check Name, Phone, and Pickup Time."); return; }
 
             const btn = document.getElementById('submit-order');
             btn.disabled = true;
@@ -324,7 +331,7 @@
                     const slotDoc = await transaction.get(slotRef);
                     const totalItems = window.cart.reduce((s, i) => s + i.quantity, 0);
                     
-                    if (slotDoc.data().current_booked + totalItems > slotDoc.data().max_capacity) throw "Full!";
+                    if (slotDoc.data().current_booked + totalItems > slotDoc.data().max_capacity) throw "Selected time is now full!";
 
                     for (const item of window.cart) {
                         const itemRef = doc(db, `${item.collectionPath}`, item.id);
@@ -334,10 +341,40 @@
                     transaction.update(slotRef, { current_booked: slotDoc.data().current_booked + totalItems });
                     transaction.set(doc(collection(db, "orders")), { customer: name, phone, pickup_slot: pickup, items: window.cart, totalAmount: window.total, status: "new", createdAt: serverTimestamp() });
                 });
-                alert("Success!");
+                alert("Success! Order placed.");
                 window.location.reload();
             } catch (err) { alert(err); btn.disabled = false; }
         });
+
+        // 新增：滾動時自動高亮導覽列邏輯
+        function setupNavHighlight() {
+            const sections = document.querySelectorAll('section, .app-layout');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    // 當捲動超過區塊頂部減去 Nav 高度時，判定為當前區塊
+                    if (pageYOffset >= (sectionTop - 80)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                // Menu 特殊處理 (因為它是 app-layout)
+                if (pageYOffset + window.innerHeight >= document.documentElement.scrollHeight) {
+                    current = 'menu-start';
+                }
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        }
 
         initApp();
     </script>
