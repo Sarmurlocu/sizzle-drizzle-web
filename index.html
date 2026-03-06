@@ -11,7 +11,7 @@
     <meta property="og:type" content="website">
     <meta property="og:image" content="logo.png">
     <link rel="icon" type="image/png" href="logo.png">
-	
+    
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -70,20 +70,11 @@
         button:hover { background-color: #c0392b; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
         .add-btn { background-color: #27ae60; padding: 8px 15px; font-size: 0.9em; width: auto; flex-grow: 1; }
-        .add-btn:hover { background-color: #2ecc71; }
-        .add-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
         
         #cart-items { list-style-type: none; padding: 0; margin-bottom: 0; }
         #cart-items li { border-bottom: 1px dashed #ccc; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; }
-        .cart-item-details { display: flex; flex-direction: column; gap: 3px; }
-        .cart-item-name { font-weight: bold; color: #2c3e50; }
-        .cart-item-calc { font-size: 0.85em; color: #7f8c8d; }
-        .cart-item-right { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        
         .total-line { font-weight: bold; font-size: 1.3em; text-align: right; margin-top: 15px; color: #e74c3c; border-top: 2px solid #e0e0e0; padding-top: 10px; }
-        .remove-btn { width: auto; padding: 4px 8px; font-size: 0.8em; background: #95a5a6; border-radius: 4px; margin: 0; }
-        .remove-btn:hover { background: #7f8c8d; }
-
+        
         #mobile-checkout-btn { 
             display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
             width: 90%; background-color: #2c3e50; color: white; z-index: 1000; 
@@ -106,56 +97,14 @@
     </header>
 
     <nav style="position: sticky; top: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; gap: 30px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); font-family: 'Segoe UI', sans-serif;">
-        <a href="#story" style="text-decoration: none; color: #2c3e50; font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Our Story</a>
-        <a href="#science" style="text-decoration: none; color: #2c3e50; font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Science</a>
-        <a href="#menu-start" style="text-decoration: none; color: #e74c3c; font-weight: 700; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Menu</a>
+        <a href="#story" style="text-decoration: none; color: #2c3e50; font-weight: 600; font-size: 0.9em; text-transform: uppercase;">Our Story</a>
+        <a href="#science" style="text-decoration: none; color: #2c3e50; font-weight: 600; font-size: 0.9em; text-transform: uppercase;">Science</a>
+        <a href="#menu-start" style="text-decoration: none; color: #e74c3c; font-weight: 700; font-size: 0.9em; text-transform: uppercase;">Menu</a>
     </nav>
 
-    <section id="story" style="padding: 80px 20px; text-align: center; background: white; margin: 20px 0; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-        <h2 style="color: #2c3e50; font-size: 2em; margin-bottom: 25px; letter-spacing: -0.5px;">From Harvard Lab to Your Table</h2>
-        <div style="width: 60px; height: 3px; background: #e74c3c; margin: 0 auto 30px auto;"></div>
-        <p style="max-width: 850px; margin: 0 auto; line-height: 1.8; color: #5a67d8; font-size: 1.15em; font-style: italic; font-weight: 500;">
-            "Why can't fast, delicious food also be scientifically nutritious?"
-        </p>
-        <p style="max-width: 800px; margin: 20px auto 0 auto; line-height: 1.8; color: #4a5568;">
-            Founded by a Harvard Medical Researcher, SIZZLE & DRIZZLE was born to bridge the gap between high-performance lifestyles and authentic Taiwanese flavors. 
-            We apply clinical precision to every recipe, ensuring your meal fuels your ambition as much as your appetite.
-        </p>
-    </section>
-
-    
-    <section id="science" style="padding: 80px 20px; background: #2d3748; color: white; border-radius: 12px; margin-bottom: 40px;">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <h2 style="font-size: 2em; margin-bottom: 10px;">The Nutritional Science</h2>
-            <p style="color: #a0aec0; font-size: 1em;">Data-driven fuel for high-performance minds.</p>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto;">
-            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; border-top: 4px solid #3498db;">
-                <h3 style="color: #3498db; margin-top: 0;">Lean Protein</h3>
-                <p style="font-weight: bold; margin-bottom: 5px;">Benefit: Recovery & Building Blocks.</p>
-                <p style="font-size: 0.85em; line-height: 1.6; color: #cbd5e0;">Science: Provides the full profile of essential amino acids required for tissue repair and neurotransmitter synthesis.</p>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; border-top: 4px solid #48bb78;">
-                <h3 style="color: #48bb78; margin-top: 0;">Dietary Fiber</h3>
-                <p style="font-weight: bold; margin-bottom: 5px;">Benefit: Digestive Longevity.</p>
-                <p style="font-size: 0.85em; line-height: 1.6; color: #cbd5e0;">Science: Essential for a healthy gut microbiome and regulating blood glucose levels for sustained satiety.</p>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; border-top: 4px solid #f6e05e;">
-                <h3 style="color: #f6e05e; margin-top: 0;">Complex Starch</h3>
-                <p style="font-weight: bold; margin-bottom: 5px;">Benefit: Sustained Cognitive Energy.</p>
-                <p style="font-size: 0.85em; line-height: 1.6; color: #cbd5e0;">Science: Ensures stable blood sugar levels, preventing the infamous "food coma" during study hours.</p>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; border-top: 4px solid #ed8936;">
-                <h3 style="color: #ed8936; margin-top: 0;">Healthy Fats & Lipids</h3>
-                <p style="font-weight: bold; margin-bottom: 5px;">Benefit: Essential Brain Fuel.</p>
-                <p style="font-size: 0.85em; line-height: 1.6; color: #cbd5e0;">Science: Supports cognitive function and the absorption of fat-soluble vitamins (A, D, E, K).</p>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; border-top: 4px solid #9f7aea;">
-                <h3 style="color: #9f7aea; margin-top: 0;">Essential Micronutrients</h3>
-                <p style="font-weight: bold; margin-bottom: 5px;">Benefit: The Body’s Catalysts.</p>
-                <p style="font-size: 0.85em; line-height: 1.6; color: #cbd5e0;">Science: A spectrum of vitamins acting as cofactors for DNA repair and immune regulation.</p>
-            </div>
-        </div>
+    <section id="story" style="padding: 60px 20px; text-align: center; background: white; margin-bottom: 20px; border-radius: 8px;">
+        <h2 style="color: #e74c3c;">From Harvard Lab to Your Table</h2>
+        <p>Founded by a Harvard Medical Researcher, we apply clinical precision to every recipe.</p>
     </section>
 
     <div id="menu-start" class="app-layout">
@@ -171,7 +120,7 @@
         </div>
 
         <section id="checkout-section" class="order-section">
-            <h2 style="margin-top: 0; text-align: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; color: #2c3e50;">Your Order</h2>
+            <h2 style="margin-top: 0; text-align: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px;">Your Order</h2>
             <ul id="cart-items">
                 <li style="color: #95a5a6; justify-content: center; border: none;">Your cart is empty</li>
             </ul>
@@ -189,9 +138,8 @@
     </div>
 
     <footer style="margin-top: 50px; padding: 40px 20px; text-align: center; border-top: 2px solid #e0e0e0; color: #7f8c8d; font-size: 0.9em; background-color: #f4f7f6;">
-        <p style="margin: 0 0 10px 0; font-weight: bold; color: #2c3e50; font-size: 1.2em;">SIZZLE & DRIZZLE</p>
-        <p style="margin: 5px 0;">📍 1220 Massachusetts Ave, Cambridge, MA 02138</p>
-        <p style="margin: 5px 0;">Fuel your mind. Engineered by a Harvard Medical PhD.</p>
+        <p style="font-weight: bold; color: #2c3e50; font-size: 1.2em;">SIZZLE & DRIZZLE</p>
+        <p>📍 1220 Massachusetts Ave, Cambridge, MA 02138</p>
     </footer>
 
     <button id="mobile-checkout-btn" onclick="document.getElementById('checkout-section').scrollIntoView({behavior: 'smooth'})">
@@ -200,16 +148,16 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-			apiKey: "AIzaSyACsOsE467bbOGrHdkxjUhcdPL-i_F_rNM",
-			authDomain: "sizzle-drizzle-restaurant.firebaseapp.com",
-			projectId: "sizzle-drizzle-restaurant",
-			storageBucket: "sizzle-drizzle-restaurant.firebasestorage.app",
-			messagingSenderId: "713438474887",
-			appId: "1:713438474887:web:f4a1514105ad9beac7be22"
-        };
+        // ⚠️ 請在此處填入你的真實 Firebase Config ⚠️
+        const firebaseConfig = { 		
+		apiKey: "AIzaSyACsOsE467bbOGrHdkxjUhcdPL-i_F_rNM",
+		authDomain: "sizzle-drizzle-restaurant.firebaseapp.com",
+		projectId: "sizzle-drizzle-restaurant",
+		storageBucket: "sizzle-drizzle-restaurant.firebasestorage.app",
+		messagingSenderId: "713438474887",
+		appId: "1:713438474887:web:f4a1514105ad9beac7be22" };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -233,45 +181,33 @@
                     const querySnapshot = await getDocs(collection(db, cat.path));
                     if (!querySnapshot.empty) {
                         querySnapshot.forEach((doc) => {
-                            renderMenuItem(container, doc.data(), doc.id);
+                            // 將品項所屬的 Collection Path 也存入，以便後續更新庫存
+                            const itemData = doc.data();
+                            itemData.collectionPath = cat.path;
+                            renderMenuItem(container, itemData, doc.id);
                         });
                     } else {
-                        container.innerHTML = "<p style='color:#7f8c8d; font-size:0.9em;'>Menu coming soon...</p>";
+                        container.innerHTML = "<p>Coming soon...</p>";
                     }
-                } catch (error) {
-                    console.error("Error loading menu: ", error);
-                }
+                } catch (error) { console.error(error); }
             }
         }
 
         function renderMenuItem(container, data, id) {
             let finalPrice = data.base_price;
-            let priceHTML = `$${finalPrice.toFixed(2)}`;
-            if (data.is_discounted) {
-                finalPrice = data.base_price * data.discount_rate;
-                priceHTML = `<span class="original-price">$${data.base_price.toFixed(2)}</span> <span style="color:#e74c3c; font-weight:bold;">$${finalPrice.toFixed(2)}</span>`;
-            }
-
-            let tagsHTML = '<div class="nutrient-badges">';
-            if(data.nutrition_tags) {
-                if(data.nutrition_tags.Protein) tagsHTML += `<span class="badge protein">Protein</span>`;
-                if(data.nutrition_tags.Fiber) tagsHTML += `<span class="badge fiber">Fiber</span>`;
-                if(data.nutrition_tags.Starch) tagsHTML += `<span class="badge starch">Carbs</span>`;
-                if(data.nutrition_tags['Fats / Lipids'] || data.nutrition_tags.Fats) tagsHTML += `<span class="badge fats">Fats</span>`;
-            }
-            tagsHTML += '</div>';
-
-            const descText = data.description ? data.description : '';
-            const descHTML = descText ? `<p style="font-size: 0.9em; color: #7f8c8d; margin: 8px 0 5px 0; line-height: 1.4;">${descText}</p>` : '';
-            const isOutOfStock = data.stock <= 0;
-            const safeName = data.name.replace(/'/g, "\\'"); 
+            if (data.is_discounted) finalPrice = data.base_price * data.discount_rate;
             
-            let actionHTML = isOutOfStock ? `<button class="add-btn" disabled>Sold Out</button>` : `
-                <div class="qty-wrapper">
-                    <span style="font-size:0.9em; color:#7f8c8d;">Qty:</span>
-                    <input type="number" id="qty-${id}" class="qty-input" value="1" min="1" max="${data.stock}">
-                </div>
-                <button class="add-btn" onclick="addToCart('${id}', '${safeName}', ${finalPrice}, ${data.stock})">+ Add</button>`;
+            const isOutOfStock = data.stock <= 0;
+            const descHTML = data.description ? `<p style="font-size: 0.9em; color: #7f8c8d; margin: 8px 0;">${data.description}</p>` : '';
+            
+            // 構建營養標籤
+            let tagsHTML = '<div class="nutrient-badges">';
+            ['Protein', 'Fiber', 'Starch', 'Fats'].forEach(tag => {
+                if(data.nutrition_tags && data.nutrition_tags[tag]) {
+                    tagsHTML += `<span class="badge ${tag.toLowerCase()}">${tag}</span>`;
+                }
+            });
+            tagsHTML += '</div>';
 
             const itemArticle = document.createElement('article');
             itemArticle.className = 'menu-item';
@@ -279,9 +215,14 @@
                 <div class="item-info">
                     <h3 class="item-name">${data.name}</h3>
                     ${descHTML} ${tagsHTML}
-                    <div class="item-price">${priceHTML}</div>
+                    <div class="item-price">$${finalPrice.toFixed(2)}</div>
                 </div>
-                <div class="action-area">${actionHTML}</div>`;
+                <div class="action-area">
+                    ${isOutOfStock ? `<button disabled>Sold Out</button>` : `
+                        <input type="number" id="qty-${id}" class="qty-input" value="1" min="1" max="${data.stock}">
+                        <button class="add-btn" onclick="addToCart('${id}', '${data.name.replace(/'/g, "\\'")}', ${finalPrice}, ${data.stock}, '${data.collectionPath}')">+ Add</button>
+                    `}
+                </div>`;
             container.appendChild(itemArticle);
         }
 
@@ -289,38 +230,57 @@
             const select = document.getElementById('pickup-time');
             const nowET = new Date(new Date().toLocaleString("en-US", {timeZone: "America/New_York"}));
             const currentTimeStr = (nowET.getHours() < 10 ? '0' : '') + nowET.getHours() + (nowET.getMinutes() < 10 ? '0' : '') + nowET.getMinutes();
+            
             try {
                 const querySnapshot = await getDocs(collection(db, "pickup_slots"));
                 const slots = [];
                 querySnapshot.forEach((doc) => slots.push({ id: doc.id, ...doc.data() }));
                 slots.sort((a, b) => a.id.localeCompare(b.id)); 
+
+                let validSlotsFound = false;
+
                 slots.forEach((slot) => {
-                    if (slot.is_active && slot.current_booked < slot.max_capacity && slot.id > currentTimeStr) {
+                    const isFuture = slot.id > currentTimeStr;
+                    const isAvailable = slot.is_active && slot.current_booked < slot.max_capacity;
+
+                    if (isFuture) {
                         const option = document.createElement('option');
-                        option.value = slot.id; 
+                        option.value = slot.id;
                         let hour = parseInt(slot.id.substring(0,2));
                         const ampm = hour >= 12 ? 'PM' : 'AM';
                         hour = hour % 12 || 12;
-                        option.textContent = `${hour}:${slot.id.substring(2,4)} ${ampm} (${slot.max_capacity - slot.current_booked} left)`;
+                        
+                        if (isAvailable) {
+                            option.textContent = `${hour}:${slot.id.substring(2,4)} ${ampm} (${slot.max_capacity - slot.current_booked} items left)`;
+                            validSlotsFound = true;
+                        } else {
+                            option.textContent = `${hour}:${slot.id.substring(2,4)} ${ampm} (Fully Booked - Contact Staff)`;
+                            option.disabled = true;
+                        }
                         select.appendChild(option);
                     }
                 });
+
+                if (!validSlotsFound) {
+                    const option = document.createElement('option');
+                    option.textContent = "Orders Closed - Please contact us for special requests";
+                    option.disabled = true;
+                    select.appendChild(option);
+                }
             } catch (error) { console.error(error); }
         }
 
-        window.addToCart = function(id, itemName, price, maxStock) {
-            const qtyInput = document.getElementById(`qty-${id}`);
-            const qtyToAdd = parseInt(qtyInput.value);
-            if (isNaN(qtyToAdd) || qtyToAdd <= 0) { alert("Invalid quantity."); return; }
-            const existingItem = window.cart.find(item => item.id === id);
-            if (existingItem) {
-                if (existingItem.quantity + qtyToAdd > maxStock) { alert("Over stock!"); return; }
-                existingItem.quantity += qtyToAdd;
+        window.addToCart = function(id, name, price, stock, path) {
+            const qty = parseInt(document.getElementById(`qty-${id}`).value);
+            if (isNaN(qty) || qty <= 0) return;
+            const existing = window.cart.find(i => i.id === id);
+            if (existing) {
+                if (existing.quantity + qty > stock) { alert("Not enough stock!"); return; }
+                existing.quantity += qty;
             } else {
-                if (qtyToAdd > maxStock) { alert("Over stock!"); return; }
-                window.cart.push({ id: id, name: itemName, price: price, quantity: qtyToAdd });
+                window.cart.push({ id, name, price, quantity: qty, collectionPath: path });
             }
-            window.total += (price * qtyToAdd);
+            window.total += (price * qty);
             updateCartUI();
         };
 
@@ -333,10 +293,10 @@
 
         function updateCartUI() {
             const cartList = document.getElementById('cart-items');
-            cartList.innerHTML = window.cart.length === 0 ? '<li style="color: #95a5a6; justify-content: center; border: none;">Your cart is empty</li>' : '';
+            cartList.innerHTML = window.cart.length === 0 ? '<li>Cart is empty</li>' : '';
             window.cart.forEach((item, index) => {
                 const li = document.createElement('li');
-                li.innerHTML = `<div class="cart-item-details"><span class="cart-item-name">${item.name}</span><span class="cart-item-calc">$${item.price.toFixed(2)} x ${item.quantity}</span></div><div class="cart-item-right"><span>$${(item.price * item.quantity).toFixed(2)}</span><button class="remove-btn" onclick="removeFromCart(${index})">X</button></div>`;
+                li.innerHTML = `<div><b>${item.name}</b><br>$${item.price.toFixed(2)} x ${item.quantity}</div><div>$${(item.price * item.quantity).toFixed(2)} <button onclick="removeFromCart(${index})">X</button></div>`;
                 cartList.appendChild(li);
             });
             document.getElementById('total-price').textContent = window.total.toFixed(2);
@@ -348,16 +308,49 @@
             const name = document.getElementById('customer-name').value.trim();
             const phone = document.getElementById('customer-phone').value.trim().replace(/\D/g, '');
             const pickup = document.getElementById('pickup-time').value;
-            if (window.cart.length === 0 || !pickup || !name || phone.length < 10) { alert("Complete all fields correctly."); return; }
+            if (window.cart.length === 0 || !pickup || !name || phone.length < 10) { alert("Complete Name, Phone, and Pickup Time."); return; }
+
             const btn = document.getElementById('submit-order');
             btn.disabled = true;
+            btn.textContent = "Processing...";
+
             try {
-                await addDoc(collection(db, "orders"), { customer: name, phone: phone, pickup_slot: pickup, items: window.cart, totalAmount: window.total, status: "new", createdAt: serverTimestamp() });
-                alert("Success!");
+                // 使用 Transaction 確保庫存與產能檢查的原子性
+                await runTransaction(db, async (transaction) => {
+                    // 1. 檢查時段總產能
+                    const slotRef = doc(db, "pickup_slots", pickup);
+                    const slotDoc = await transaction.get(slotRef);
+                    const totalItems = window.cart.reduce((s, i) => s + i.quantity, 0);
+                    
+                    if (slotDoc.data().current_booked + totalItems > slotDoc.data().max_capacity) {
+                        throw "Selected time slot is now full. Please select another time.";
+                    }
+
+                    // 2. 檢查各項商品庫存
+                    const stockUpdates = [];
+                    for (const item of window.cart) {
+                        const itemRef = doc(db, `${item.collectionPath}`, item.id);
+                        const itemDoc = await transaction.get(itemRef);
+                        if (itemDoc.data().stock < item.quantity) {
+                            throw `Sorry, ${item.name} just sold out!`;
+                        }
+                        stockUpdates.push({ ref: itemRef, nextStock: itemDoc.data().stock - item.quantity });
+                    }
+
+                    // 3. 執行所有寫入動作
+                    transaction.update(slotRef, { current_booked: slotDoc.data().current_booked + totalItems });
+                    stockUpdates.forEach(u => transaction.update(u.ref, { stock: u.nextStock }));
+                    
+                    const orderData = { customer: name, phone, pickup_slot: pickup, items: window.cart, totalAmount: window.total, status: "new", createdAt: serverTimestamp() };
+                    transaction.set(doc(collection(db, "orders")), orderData);
+                });
+
+                alert("Success! Order placed.");
                 window.cart = []; window.total = 0; updateCartUI();
                 document.getElementById('customer-name').value = ''; document.getElementById('customer-phone').value = '';
-            } catch (error) { alert("Error."); } finally { btn.disabled = false; }
+            } catch (err) { alert(err); } finally { btn.disabled = false; btn.textContent = "Submit Order"; }
         });
+
         initApp();
     </script>
 </body>
